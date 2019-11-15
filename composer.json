@@ -1,0 +1,28 @@
+{
+    "name": "orq/laravel-yacommerce",
+    "description": "\"The Laravel yacommerce package\"",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Rocky Ou",
+            "email": "rockysynergy@qq.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Orq\\Laravel\\YaCommerce\\": "src/"
+        }
+    },
+    "require": {
+        "illuminate/support": "^5.8.0",
+        "orq/laravel-dddbase": "^1.0.0",
+        "orq/wxpay": "dev-master"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Orq\\Laravel\\YaCommerce\\YaCommerceServiceProvider"
+            ]
+        }
+    }
+}
