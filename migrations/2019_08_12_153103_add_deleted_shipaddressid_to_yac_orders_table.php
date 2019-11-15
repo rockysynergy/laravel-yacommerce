@@ -30,7 +30,7 @@ class AddDeletedShipaddressidToYacOrdersTable extends Migration
     {
         Schema::table('yac_orders', function (Blueprint $table) {
             $table->dropColumn('deleted');
-            $table->dropForeign('yac_orders_shipaddress_id');
+            $table->dropForeign(['shipaddress_id']);
             $table->dropColumn('shipaddress_id');
         });
     }

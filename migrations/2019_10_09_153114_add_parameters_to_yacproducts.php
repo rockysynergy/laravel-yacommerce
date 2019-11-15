@@ -15,7 +15,7 @@ class AddParametersToYacproducts extends Migration
     {
         Schema::table('yac_products', function (Blueprint $table) {
             $table->unsignedBigInteger('show_price')->default(0)->comment('显示价格');
-            $table->string('parameters', 3000)->comment('商品参数');
+            $table->string('parameters', 3000)->nullable()->comment('商品参数');
         });
     }
 
