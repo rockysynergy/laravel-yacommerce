@@ -39,5 +39,4 @@ class YaCommerceServiceProvider extends ServiceProvider
             __DIR__.'/../views' => resource_path('views/vendor/YaCommerce'),
         ]);
     }
-
 }
