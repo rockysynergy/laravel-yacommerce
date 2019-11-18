@@ -31,7 +31,8 @@ class YaCommerceServiceProvider extends ServiceProvider
             __DIR__.'/../configs/shiptracking.config.php' => config_path('shiptracking.php'),
         ]);
 
-        $this->loadRoutesFrom(__DIR__.'/../routes');
+        $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
+        $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
         $this->loadMigrationsFrom(__DIR__.'/../migrations');
 
         $this->loadViewsFrom(__DIR__.'/../views', 'YaCommerce');
