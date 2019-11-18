@@ -2,7 +2,7 @@
 
 namespace Orq\Laravel\YaCommerce\Payment;
 
-use Orq\Wxpay\WxpayConfigInterface as WxpayConfigInterface;
+use Orq\Wxpay\WxPayConfigInterface as WxpayConfigInterface;
 
 class WxPayConf implements WxpayConfigInterface
 {

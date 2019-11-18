@@ -1,7 +1,6 @@
 <?php
 namespace Orq\Laravel\YaCommerce\Shipment\Service;
 
-use App\MicroGroup\Domain\Model\User;
 use Orq\Laravel\YaCommerce\Shipment\Repository\ShipAddressRepository;
 
 class ShipAddressService
@@ -18,7 +17,10 @@ class ShipAddressService
         return false;
     }
 
-    public static function getAllForUser(User $user):array
+    /**
+     * @param Orq\Laravel\YaCommerce\UserInterface
+     */
+    public static function getAllForUser($user):array
     {
         return ShipAddressRepository::find([['user_id', '=', $user->getId()]])->toArray();
     }

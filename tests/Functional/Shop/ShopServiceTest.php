@@ -8,9 +8,17 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Orq\Laravel\YaCommerce\Shop\Service\ShopService;
 
-class ShopServiceTest extends DbTestCase
+class ShopServiceTest  extends DbTestCase
 {
     use RefreshDatabase;
+
+    protected function getEnvironmentSetUp($app)
+    {
+        $app['config']->set('yac.product_service.bp_shop', 'ProductService');
+        $app['config']->set('yac.product_service.shop', 'ProductService');
+        $app['config']->set('yac.product_service.seckill', 'SeckillProductService');
+        parent::getEnvironmentSetUp($app);
+    }
 
     /**
      * @test
@@ -50,7 +58,7 @@ class ShopServiceTest extends DbTestCase
     public function createShop()
     {
         $name = '积分商城';
-        $sId = ShopService::createShop($name);
+        $sId = ShopService::createShop('bp_shop', $name);
 
         $shop = ShopRepository::findById($sId, true);
         $this->assertEquals($name, $shop->getName());

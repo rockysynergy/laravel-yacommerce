@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "4abc447efa5daa51a1d381ecc00c101f",
+    "content-hash": "1898f83aa8d109a5b91d3ccbd21c900d",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -896,16 +896,16 @@
         },
         {
             "name": "orq/wxpay",
-            "version": "dev-master",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rockysynergy/wxpay.git",
-                "reference": "e292d943bec888233377fd601f769ef3b40dff2f"
+                "reference": "14ad48162da85a12372889c6b2350ae4c18681aa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rockysynergy/wxpay/zipball/e292d943bec888233377fd601f769ef3b40dff2f",
-                "reference": "e292d943bec888233377fd601f769ef3b40dff2f",
+                "url": "https://api.github.com/repos/rockysynergy/wxpay/zipball/14ad48162da85a12372889c6b2350ae4c18681aa",
+                "reference": "14ad48162da85a12372889c6b2350ae4c18681aa",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -931,7 +931,7 @@
                 }
             ],
             "description": "PHP WeChat Pay library",
-            "time": "2019-08-05T03:18:29+00:00"
+            "time": "2019-11-18T01:35:06+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -4850,9 +4850,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "orq/wxpay": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

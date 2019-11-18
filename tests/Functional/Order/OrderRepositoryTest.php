@@ -2,15 +2,14 @@
 
 namespace Tests\YaCommerce\Functional\Order;
 
-
-use Tests\DbTestCase;
 use Orq\DddBase\ModelFactory;
 use Illuminate\Support\Facades\DB;
 use Orq\Laravel\YaCommerce\Order\Model\Order;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Orq\Laravel\YaCommerce\Order\Repository\OrderRepository;
+use Tests\DbTestCase;
 
-class OrderRepositoryTest extends DbTestCase
+class OrderRepositoryTest  extends DbTestCase
 {
     use RefreshDatabase;
 

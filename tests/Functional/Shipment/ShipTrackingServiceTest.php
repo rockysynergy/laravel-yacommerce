@@ -8,7 +8,7 @@ use Orq\Laravel\YaCommerce\Shipment\Service\HttpService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Orq\Laravel\YaCommerce\Shipment\Service\ShipTrackingService;
 
-class ShipTrackingServiceTest extends DbTestCase
+class ShipTrackingServiceTest  extends DbTestCase
 {
     use RefreshDatabase;
 

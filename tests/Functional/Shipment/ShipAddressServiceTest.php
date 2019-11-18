@@ -2,13 +2,13 @@
 
 namespace Tests\YaCommerce\Functional\Shipment;
 
-use App\MicroGroup\Domain\Model\User;
 use Tests\DbTestCase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Orq\Laravel\YaCommerce\Shipment\Service\ShipAddressService;
+use Orq\Laravel\YaCommerce\UserInterface;
 
-class ShipAddressServiceTest extends DbTestCase
+class ShipAddressServiceTest  extends DbTestCase
 {
     use RefreshDatabase;
 
@@ -40,5 +40,20 @@ class ShipAddressServiceTest extends DbTestCase
 
         $this->assertEquals(1, count($re));
         $this->assertEquals($address_1['name'], $re[0]['name']);
+    }
+}
+
+class User implements UserInterface
+{
+    protected $id;
+
+    public function setId($userId)
+    {
+        $this->id= $userId;
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
     }
 }

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Orq\Laravel\YaCommerce\Product\Service\ProductService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class ProductServiceTest extends DbTestCase
+class ProductServiceTest  extends DbTestCase
 {
     use RefreshDatabase;
 

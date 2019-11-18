@@ -11,10 +11,18 @@ use Orq\Laravel\YaCommerce\Order\Service\OrderService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\MakeStringTrait;
 
-class OrderServiceTest extends DbTestCase
+class OrderServiceTest  extends DbTestCase
 {
     use RefreshDatabase;
     use MakeStringTrait;
+
+    protected function getEnvironmentSetUp($app)
+    {
+        $app['config']->set('yac.product_service.bp_shop', 'ProductService');
+        $app['config']->set('yac.product_service.shop', 'ProductService');
+        $app['config']->set('yac.product_service.seckill', 'SeckillProductService');
+        parent::getEnvironmentSetUp($app);
+    }
 
     /**
      * @test
@@ -213,6 +221,6 @@ class PrapayUserA implements PrepaidUserInterface {
 
     public function deductCredit($amount)
     {
-        $this->credit -= ($amount/100);
+        $this->credit -= $amount;
     }
 };

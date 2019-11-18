@@ -83,7 +83,7 @@ class OrderService
         if (!$user instanceof PrepaidUserInterface) {
             throw new \Exception('请提供实现了PrepaidUserInterface的用户实例！', 1565588142);
         }
-        $total = self::totalizePayAmount($data);
+        $total = self::totalizePayAmount($data) / 100;
         if ($total > $user->getLeftCredit()) {
             throw new DomainException('余额（积分）不足！', 1565581699);
         }

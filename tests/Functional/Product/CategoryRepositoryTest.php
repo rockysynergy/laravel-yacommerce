@@ -7,7 +7,7 @@ use Tests\DbTestCase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class CategoryRepositoryTest extends DbTestCase
+class CategoryRepositoryTest  extends DbTestCase
 {
     use RefreshDatabase;
 
