@@ -4,8 +4,8 @@ namespace Orq\Laravel\YaCommerce\AppServices\Admin;
 
 use Orq\DddBase\ModelFactory;
 use Illuminate\Support\Facades\Log;
-use Orq\Laravel\YaCommerce\AppService\Api\ShopService;
 use Orq\Laravel\YaCommerce\Product\Model\Product;
+use Orq\Laravel\YaCommerce\AppServices\Api\ShopService;
 use Orq\Laravel\YaCommerce\Product\Model\SeckillProduct;
 use Orq\Laravel\YaCommerce\Product\Repository\ProductRepository;
 use Orq\Laravel\YaCommerce\Product\Repository\SeckillProductRepository;

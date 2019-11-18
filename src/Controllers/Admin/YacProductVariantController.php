@@ -13,7 +13,7 @@ class YacProductVariantController extends Controller
     public function new(Request $request)
     {
         $productId = $request->input('productId');
-        return view('YaCommerce::product_variant.form', ['siteName'=>'微圈宝', 'productId'=>$productId]);
+        return view('YaCommerce::product_variant.form', ['productId'=>$productId]);
     }
 
     public function save(Request $request)

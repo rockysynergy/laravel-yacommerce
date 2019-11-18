@@ -60,8 +60,8 @@ $(document).ready(function () {
                 type: 2,
                 content: conf.showUrl,
                 area: ['900px', '700px'],
-                title: '添加',
-                btn: '添加',
+                title: '种类',
+                btn: '编辑',
                 cancel: function (index, layero) {
                     if (confirm('确定要关闭么')) {
                         layer.close(index)

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Service\Api\AuthService;
 use Orq\DddBase\IllegalArgumentException;
-use Orq\Laravel\YaCommerce\AppService\Api\ShopService;
+use Orq\Laravel\YaCommerce\AppServices\Api\ShopService;
 use Orq\Laravel\YaCommerce\Order\Service\OrderService;
 use Orq\Laravel\YaCommerce\Order\Service\CartItemService;
 use Orq\Laravel\YaCommerce\Shipment\Service\ShipAddressService;
