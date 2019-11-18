@@ -39,6 +39,6 @@ class YaCommerceServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__.'/../views', 'YaCommerce');
         $this->publishes([
             __DIR__.'/../views' => resource_path('views/vendor/YaCommerce'),
-        ]);
+        ], 'views');
     }
 }
