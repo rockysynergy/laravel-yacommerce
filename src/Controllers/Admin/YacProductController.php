@@ -17,13 +17,13 @@ class YacProductController extends Controller
             $products = YacProductService::getProductsForShop($shopId, true);
             return response()->json(['code'=>'0','msg'=>'success','count'=>count($products), 'data'=>$products]);
         }
-        return view('YaCommerce::product.index', ['siteName'=>'微圈宝', 'shopId'=>$shopId, 'shopType'=>ShopRepository::getType($shopId)->type]);
+        return view('YaCommerce::product.index', ['shopId'=>$shopId, 'shopType'=>ShopRepository::getType($shopId)->type]);
     }
 
     public function new(Request $request)
     {
         $categories = YacCategoryService::getCategoriesForShop((int)$request->input('shopId'));
-        return view('YaCommerce::product.new', ['siteName'=>'微圈宝', 'shopType'=>$request->input('shopType'), 'categories'=>$categories]);
+        return view('YaCommerce::product.new', ['shopType'=>$request->input('shopType'), 'categories'=>$categories]);
     }
 
     public function save(Request $request)
