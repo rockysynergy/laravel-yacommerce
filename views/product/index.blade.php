@@ -23,5 +23,5 @@
 @endsection
 
 @push('body-scripts')
-    <script src="{{asset('/js/admin/yac/product.js?v=').time()}}"></script>
+    <script src="{{asset('/vendor/YaCommerce/product.js?v=').time()}}"></script>
 @endpush

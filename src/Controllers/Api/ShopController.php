@@ -66,7 +66,7 @@ class ShopController extends Controller
     {
         try {
             $wqbUser = AuthService::getWqbUser((int) $request->header('app-user-id'), (int) $request->header('app-id'));
-            $d = OrderService::findAllForUser($wqbUser->getId(), $request->input('ptype'), $request->input('pid'));
+            $d = OrderService::findAllForUser($wqbUser->getId(), $request->input('ptype'), (int) $request->input('pid'));
             $k = $request->input('ptype') . '_' . $request->input('pid') . '_orders';
             return response()->json(['code' => 0, 'msg' => 'success', 'data' => [$k => $d]]);
         } catch (DomainException $e) {
@@ -103,7 +103,7 @@ class ShopController extends Controller
     {
         try {
             $wqbUser = AuthService::getWqbUser((int) $request->header('app-user-id'), (int) $request->header('app-id'));
-            CartItemService::deleteItem($request->input('item_id'));
+            CartItemService::deleteItem((int) $request->input('item_id'));
             return response()->json(['code' => 0, 'msg' => 'success', 'data' => []]);
         } catch (DomainException | IllegalArgumentException $e) {
             Log::error('Code: ' . $e->getCode() . ' Msg: ' . $e->getMessage());
@@ -115,7 +115,7 @@ class ShopController extends Controller
     {
         try {
             $wqbUser = AuthService::getWqbUser((int) $request->header('app-user-id'), (int) $request->header('app-id'));
-            $d = CartItemService::getAllForUser($wqbUser->getId(), $request->input('shop_id'));
+            $d = CartItemService::getAllForUser($wqbUser->getId(), (int) $request->input('shop_id'));
             return response()->json(['code' => 0, 'msg' => 'success', 'data' => $d]);
         } catch (DomainException | IllegalArgumentException $e) {
             Log::error('Code: ' . $e->getCode() . ' Msg: ' . $e->getMessage());

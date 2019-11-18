@@ -53,6 +53,7 @@ class YacCategoryController extends Controller
         if (Gate::allows('manage-shop', $request->input('shop_id'))) {
             try {
                 YacCategoryService::updateItem($request->all());
+                Log::debug('>>The category to update:'.json_encode($request->all()));
                 return response()->json(['code' => 0, 'msg' => '修改成功', 'data' => $request->all()]);
             } catch (\Exception $e) {
                 Log::debug($e->getMessage());

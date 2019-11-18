@@ -29,7 +29,10 @@ class YaCommerceServiceProvider extends ServiceProvider
             __DIR__.'/../configs/yac.config.php' => config_path('yac.php'),
             __DIR__.'/../configs/pay.config.php' => config_path('pay.php'),
             __DIR__.'/../configs/shiptracking.config.php' => config_path('shiptracking.php'),
-        ]);
+        ], 'configs');
+        $this->publishes([
+            __DIR__.'/../assets' => public_path('vendor/YaCommerce')
+        ], 'assets');
 
         $this->loadMigrationsFrom(__DIR__.'/../migrations');
 
