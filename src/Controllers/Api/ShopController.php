@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace Orq\Laravel\YaCommerce\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Orq\DddBase\DomainException;

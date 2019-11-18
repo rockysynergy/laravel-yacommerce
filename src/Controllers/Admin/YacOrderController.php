@@ -1,5 +1,5 @@
 <?php
-namespace Orq\Laravel\YaCommerce\Controllers;
+namespace Orq\Laravel\YaCommerce\Controllers\Admin;
 
 use Orq\DddBase\DomainException;
 use App\Http\Controllers\Controller;
