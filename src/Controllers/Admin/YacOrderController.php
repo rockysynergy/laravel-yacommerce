@@ -5,7 +5,7 @@ use Orq\DddBase\DomainException;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Orq\Laravel\YaCommerce\AppService\Admin\YacOrderService;
+use Orq\Laravel\YaCommerce\AppServices\Admin\YacOrderService;
 
 class YacOrderController extends Controller
 {
