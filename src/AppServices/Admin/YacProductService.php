@@ -6,6 +6,7 @@ use Orq\DddBase\ModelFactory;
 use Illuminate\Support\Facades\Log;
 use Orq\Laravel\YaCommerce\Product\Model\Product;
 use Orq\Laravel\YaCommerce\AppServices\Api\ShopService;
+use Orq\Laravel\YaCommerce\Events\PersistProduct;
 use Orq\Laravel\YaCommerce\Product\Model\SeckillProduct;
 use Orq\Laravel\YaCommerce\Product\Repository\ProductRepository;
 use Orq\Laravel\YaCommerce\Product\Repository\SeckillProductRepository;
@@ -27,11 +28,15 @@ class YacProductService
         if ($data['shop_type'] == 'seckill') {
             $data['total'] = $data['inventory'];
             $prod = ModelFactory::make(SeckillProduct::class, $data);
-            SeckillProductRepository::save($prod);
+            $id = SeckillProductRepository::saveGetId($prod);
         } else {
             $prod = ModelFactory::make(Product::class, $data);
-            ProductRepository::save($prod);
+            $id = ProductRepository::saveGetId($prod);
         }
+
+        $d = $data;
+        $d['id'] = $id;
+        event(new PersistProduct($d));
     }
 
     public static function getById(int $id, string $shopType):object
@@ -58,5 +63,7 @@ class YacProductService
             $prod = ModelFactory::make(Product::class, $data);
             ProductRepository::update($prod);
         }
+
+        event(new PersistProduct($data));
     }
 }

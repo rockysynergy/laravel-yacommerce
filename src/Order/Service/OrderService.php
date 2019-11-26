@@ -8,6 +8,7 @@ use Orq\DddBase\DomainException;
 use App\MicroGroup\Domain\Model\User;
 use Orq\Laravel\YaCommerce\Payment\WxPay;
 use Illuminate\Support\Facades\Log;
+use Orq\Laravel\YaCommerce\Events\SavedOrder;
 use Orq\Laravel\YaCommerce\Order\Model\Order;
 use Orq\Laravel\YaCommerce\Order\OrderException;
 use Orq\Laravel\YaCommerce\Order\PrepaidUserInterface;
@@ -64,6 +65,7 @@ class OrderService
         $id = OrderRepository::saveGetId($order);
         OrderRepository::saveOrderItems($id, $data['items']);
 
+        event(new SavedOrder($data));
         return $id;
     }
 

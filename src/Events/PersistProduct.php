@@ -10,12 +10,12 @@ use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 
-class ChangeShipnumber
+class PersistProduct
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
-     * ['shiptracking_id', 'shipnumber', 'phone']
+     * product information
      */
     public $data;
 

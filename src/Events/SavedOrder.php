@@ -10,12 +10,12 @@ use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 
-class ChangeShipnumber
+class SavedOrder
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
-     * ['shiptracking_id', 'shipnumber', 'phone']
+     * []
      */
     public $data;
 
@@ -24,12 +24,10 @@ class ChangeShipnumber
      *
      * @return void
      */
-    public function __construct(array $data)
+    public function __construct(Array $data)
     {
         $this->data = $data;
     }
-
-
 
 
     /**

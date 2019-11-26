@@ -11,4 +11,5 @@ Yet Another Commerce Pakcage for Laravel.
 Route::namespace('Admin')->prefix('admin')->name('admin.')->group(function () {
      \Orq\Laravel\YaCommerce\Yac::webRoutes();
 });
+
 ```
