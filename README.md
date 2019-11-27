@@ -116,3 +116,7 @@ Route::namespace('Admin')->prefix('admin')->name('admin.')->group(function () {
     })
   },
 ```
+
+* 事件
+
+1. 

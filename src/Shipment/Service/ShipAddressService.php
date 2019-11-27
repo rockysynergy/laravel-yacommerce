@@ -20,8 +20,8 @@ class ShipAddressService
     /**
      * @param Orq\Laravel\YaCommerce\UserInterface
      */
-    public static function getAllForUser($user):array
+    public static function getAllForUser($userId):array
     {
-        return ShipAddressRepository::find([['user_id', '=', $user->getId()]])->toArray();
+        return ShipAddressRepository::find([['user_id', '=', $userId]])->toArray();
     }
 }

@@ -79,8 +79,7 @@ class ShopController extends Controller
     public function getShipAddressesForUser(Request $request)
     {
         try {
-            $wqbUser = AuthService::getWqbUser((int) $request->header('app-user-id'), (int) $request->header('app-id'));
-            $d = ShipAddressService::getAllForUser($wqbUser);
+            $d = ShipAddressService::getAllForUser((int) $request->input('user_id'));
             return response()->json(['code' => 0, 'msg' => 'success', 'data' => $d]);
         } catch (DomainException $e) {
             Log::error('Code: ' . $e->getCode() . ' Msg: ' . $e->getMessage());
