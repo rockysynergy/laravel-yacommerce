@@ -4,7 +4,6 @@ namespace Orq\Laravel\YaCommerce\AppServices\Api;
 
 use Orq\DddBase\IllegalArgumentException;
 use App\Http\Service\WxService;
-use App\MicroGroup\Domain\Service\BonusPointService;
 use Orq\Laravel\YaCommerce\Order\Service\OrderService;
 use Orq\Laravel\YaCommerce\Shop\Repository\ShopRepository;
 use Orq\Laravel\YaCommerce\Product\Repository\ProductRepository;
@@ -68,7 +67,8 @@ class ShopService
 
         $data['ptype'] = $data['shop_type'];
         if (strtolower($data['shop_type']) == 'bp_shop') {
-            OrderService::makePrepaidOrder($data, new BonusPointService((int)$data['user_id']));
+            $bpService = \resolve('Orq\Laravel\YaCommerce\Order\PrepaidUserInterface', ['userId' => (int)$data['user_id']]);
+            OrderService::makePrepaidOrder($data, $bpService);
         }
 
         if (strtolower($data['shop_type']) == 'shop') {
