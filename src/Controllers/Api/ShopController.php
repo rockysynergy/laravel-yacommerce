@@ -66,8 +66,7 @@ class ShopController extends Controller
     public function getAllOrdersForUser(Request $request)
     {
         try {
-            $wqbUser = AuthService::getWqbUser((int) $request->header('app-user-id'), (int) $request->header('app-id'));
-            $d = OrderService::findAllForUser($wqbUser->getId(), $request->input('ptype'), (int) $request->input('pid'));
+            $d = OrderService::findAllForUser((int) $request->input('user_id'), $request->input('ptype'), (int) $request->input('pid'));
             $k = $request->input('ptype') . '_' . $request->input('pid') . '_orders';
             return response()->json(['code' => 0, 'msg' => 'success', 'data' => [$k => $d]]);
         } catch (DomainException $e) {
