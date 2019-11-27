@@ -41,8 +41,9 @@ class ShopController extends Controller
     public function makeOrder(Request $request)
     {
         try {
-            $wqbUser = AuthService::getWqbUser((int) $request->input('app_user_id'), (int) $request->input('app_id'));
-            $payload = ShopService::makeOrder(array_merge($request->all(), ['user_id' => $wqbUser->getId(), 'app_user_id' => $request->header('app-user-id')]));
+            $data = $request->all();
+            if (!isset($data['user_id'])) throw new IllegalArgumentException('请提供 user_id', 1574825377);
+            $payload = ShopService::makeOrder(array_merge($request->all(), ['app_user_id' => $request->header('app-user-id')]));
             return response()->json(['code' => 0, 'msg' => 'success', 'data' => $payload]);
         } catch (DomainException | IllegalArgumentException $e) {
             Log::error('Code: ' . $e->getCode() . ' Msg: ' . $e->getMessage());
