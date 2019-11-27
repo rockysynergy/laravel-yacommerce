@@ -50,7 +50,7 @@ class ShopService
             $p['variants'] = ProductVariantRepository::find([['product_id', '=', $id]], true)->toArray();
         }
 
-        $p['detail'] = WxService::parseHtml($p['description'], config('app.url'));
+        // $p['detail'] = WxService::parseHtml($p['description'], config('app.url'));
         $pics = explode(',', $p['pictures']);
         foreach ($pics as $k=>$pic) {
             $pics[$k] = config('app.url').$pic;
