@@ -3,7 +3,6 @@
 namespace Orq\Laravel\YaCommerce\AppServices\Api;
 
 use Orq\DddBase\IllegalArgumentException;
-use App\Http\Service\WxService;
 use Orq\Laravel\YaCommerce\Order\Service\OrderService;
 use Orq\Laravel\YaCommerce\Shop\Repository\ShopRepository;
 use Orq\Laravel\YaCommerce\Product\Repository\ProductRepository;
@@ -13,13 +12,13 @@ use Orq\Laravel\YaCommerce\Product\Repository\SeckillProductRepository;
 
 class ShopService
 {
-    public static function getAllProductForShop(int $shopId, bool $showAll = false): array
+    public static function getAllProductForShop(int $shopId, bool $showAll = false, array $filter = []): array
     {
         $shopType = ShopRepository::getType($shopId)->type;
-        $rs = YacShopService::getAllProductsForShop($shopId, $shopType, $showAll);
+        $rs = YacShopService::getAllProductsForShop($shopId, $shopType, $showAll, $filter);
         $a = [];
         if ($shopType == 'seckill') {
-            foreach ($rs as $r) {
+            foreach ($rs['data'] as $r) {
                 if (!$showAll && $r->isFinished()) continue;
 
                 $inFields = ['id', 'title','price', 'sk_price', 'status_text', 'progress',  'start_time', 'end_time',
@@ -27,14 +26,14 @@ class ShopService
                 array_push($a, $r->getData($inFields));
             }
         } else {
-            foreach ($rs as $r) {
+            foreach ($rs['data'] as $r) {
                 $product = $r->getData(['id', 'title', 'price', 'status', 'cover_pic', 'inventory']);
                 $product['variants'] = ProductVariantRepository::find([['product_id', '=', $r->getId()]], true)->toArray();
                 array_push($a, $product);
             }
         }
 
-        return $a;
+        return ['count' => $rs['count'], 'data' => $a];
     }
 
     public static function getProductInfo(int $id, int $shopId): array
@@ -50,7 +49,6 @@ class ShopService
             $p['variants'] = ProductVariantRepository::find([['product_id', '=', $id]], true)->toArray();
         }
 
-        // $p['detail'] = WxService::parseHtml($p['description'], config('app.url'));
         $pics = explode(',', $p['pictures']);
         foreach ($pics as $k=>$pic) {
             $pics[$k] = config('app.url').$pic;

@@ -14,9 +14,10 @@ use Orq\Laravel\YaCommerce\Product\Repository\SeckillProductRepository;
 class YacProductService
 {
 
-    public static function getProductsForShop(int $shopId, bool $showAll = false):array
+    public static function getProductsForShop(int $shopId, bool $showAll = false, array $filter = []):array
     {
-        $result = ShopService::getAllProductForShop($shopId, $showAll);
+
+        $result = ShopService::getAllProductForShop($shopId, $showAll, $filter);
         return $result;
     }
 

@@ -32,7 +32,7 @@
             <label class="layui-form-label">支付方式</label>
             <div class="layui-input-block">
                 <select name="pay_method">
-                    @foreach (config('kvconfig.pay_method') as $k => $item)
+                    @foreach (config('pay.pay_method') as $k => $item)
                         <option value="{{$k}}" {{$order['pay_method'] == $k ? 'selected' : ''}}>{{$item}}</option>
                     @endforeach
                 </select>
@@ -43,7 +43,7 @@
             <label class="layui-form-label">支付状态</label>
             <div class="layui-input-block">
                 <select name="pay_status">
-                    @foreach (config('kvconfig.pay_status') as $k => $item)
+                    @foreach (config('pay.pay_status') as $k => $item)
                         <option value="{{$k}}" {{$order['pay_status'] == $k ? 'selected' : ''}}>{{$item}}</option>
                     @endforeach
                 </select>

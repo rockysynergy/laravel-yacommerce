@@ -12,4 +12,13 @@ return [
         'notify_url' => 'https://wqb.fs007.com.cn/fe/wxpay/notify',
         'server_ip' => '47.106.94.36',
     ],
+    'pay_method' => [
+        '1' => '微信',
+        '2' => '现金',
+        '3' => '支付宝',
+    ],
+    'pay_status' => [
+        '1' => '等待支付',
+        '2' => '完成支付',
+    ],
 ];

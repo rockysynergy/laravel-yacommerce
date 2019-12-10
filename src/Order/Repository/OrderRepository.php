@@ -102,8 +102,8 @@ class OrderRepository extends AbstractRepository
         if (isset($filter['filterCreatedAt'])) $aQuery = $aQuery->whereDate('created_at', $filter['filterCreatedAt']);
 
         $query = DB::table('yac_shipaddresses as B');
-        if (isset($filter['filterName'])) $query = $query->where('name', '=', "%{$filter['filterName']}");
-        if (isset($filter['filterMobile'])) $query = $query->where('mobile', '=', "%{$filter['filterMobile']}");
+        if (isset($filter['filterName'])) $query = $query->where('name', 'like', "%{$filter['filterName']}");
+        if (isset($filter['filterMobile'])) $query = $query->where('mobile', 'like', "%{$filter['filterMobile']}");
         $query->leftJoinSub($aQuery, 'A', function ($join) use ($ptype, $pid) {
             $join->on('A.shipaddress_id', '=', 'B.id')
             ->select('A.*', 'B.name', 'B.mobile', 'B.address')

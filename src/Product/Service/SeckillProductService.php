@@ -8,15 +8,16 @@ use Orq\Laravel\YaCommerce\Product\Repository\SeckillProductRepository;
 class SeckillProductService
 {
 
-    public static function getAllForShop(int $shopId, bool $showAll)
+    public static function getAllForShop(int $shopId, bool $showAll, array $filter = [])
     {
-        $items = SeckillProductRepository::getAllByShopId($shopId, $showAll);
+        $prodRep = resolve(SeckillProductRepository::class);
+        $items = $prodRep->getAllByShopId($shopId, $showAll, $filter);
         $arr = [];
-        foreach ($items as $item) {
+        foreach ($items['data'] as $item) {
             $d = json_decode(json_encode($item), true);
             array_push($arr, ModelFactory::make(SeckillProduct::class, $d));
         }
-        return $arr;
+        return ['count' => $items['count'], 'data' => $arr];
     }
 
     public static function getById(int $id):array

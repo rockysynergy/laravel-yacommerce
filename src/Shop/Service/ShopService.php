@@ -15,10 +15,10 @@ class ShopService
     /**
      * @return array of Product instances
      */
-    public static function getAllProductsForShop(int $shopId, string $shopType, bool $showAll=true):array
+    public static function getAllProductsForShop(int $shopId, string $shopType, bool $showAll=true, array $filter = []):array
     {
         $prodService = "\\Orq\\Laravel\\YaCommerce\\Product\\Service\\".config('yac.product_service.'.$shopType);
-        return $prodService::getAllForShop($shopId, $showAll);
+        return $prodService::getAllForShop($shopId, $showAll, $filter);
     }
 
     public static function createShop(string $type, string $name):int

@@ -14,8 +14,8 @@ class YacProductController extends Controller
     public function index($shopId, Request $request)
     {
         if ($request->input('m') == 'fetch') {
-            $products = YacProductService::getProductsForShop($shopId, true);
-            return response()->json(['code'=>'0','msg'=>'success','count'=>count($products), 'data'=>$products]);
+            $products = YacProductService::getProductsForShop($shopId, true, $request->all());
+            return response()->json(['code'=>'0','msg'=>'success','count'=>$products['count'], 'data'=>$products['data']]);
         }
         return view('YaCommerce::product.index', ['shopId'=>$shopId, 'shopType'=>ShopRepository::getType($shopId)->type]);
     }

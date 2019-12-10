@@ -116,8 +116,7 @@ Route::namespace('Admin')->prefix('admin')->name('admin.')->group(function () {
     })
   },
 ```
-
-7. `php artisan vendor:publish --force` to publish assets and views
+8. `php artisan vendor:publish  --force` to publish assets and views
 
 * 事件
 

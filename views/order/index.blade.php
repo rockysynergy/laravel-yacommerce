@@ -6,7 +6,6 @@
     <nav class="nav__top">
         <div class="nav-item nav-item__new">
             <button type="button" class="layui-btn"><i class="layui-icon layui-icon-add-1"></i>添加</button>
-
             {{-- 搜索表单 --}}
             <div class="layui-inline">
                 <input class="layui-input filter-form-input" name="filterName" id="filterName" placeholder="收件人" autocomplete="off">
@@ -24,6 +23,7 @@
             <button class="layui-btn" id="btn-refresh"><i class="layui-icon layui-icon-refresh"></i></button>
         </div>
     </nav>
+
     <div id="order-list" lay-filter="order-list"></div>
 </div>
 
@@ -50,7 +50,6 @@
                     , url: '/admin/shop_order/index/'+shopId+'?m=fetch' //数据接口
                     , toolbar: true
                     , page: true //开启分页
-                    , limit: 15
                     , cols: [[ //表头
                         { field: 'id', title: 'ID', width: 60, sort: true}
                         , { field: 'order_number', title: '订单号', width: 200 }
