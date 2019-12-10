@@ -94,7 +94,7 @@ class OrderRepository extends AbstractRepository
     /**
      * For admin order listing
      */
-    public static function findAllFor(string $ptype, int $pid, array $filter)
+    public function findAllFor(string $ptype, int $pid, array $filter)
     {
         // return self::find([['ptype', '=', $ptype], ['pid', '=', $pid]])->toArray();
         $aQuery = DB::table(self::$table);
@@ -111,7 +111,7 @@ class OrderRepository extends AbstractRepository
             ->where('A.pid', '=', $pid);
         });
 
-        return self::paginate($query, $filter);
+        return $this->paginate($query, $filter);
     }
 
     public static function findByIdWithTracking(int $id)
