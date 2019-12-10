@@ -13,7 +13,7 @@ class YacOrderController extends Controller
     {
         if ($request->input('m') == 'fetch') {
             $orders = YacOrderService::getOrdersForShop($shopId, $request->all());
-            return response()->json(['code'=>'0','msg'=>'success','count'=>count($orders), 'data'=>$orders]);
+            return response()->json(['code'=>'0','msg'=>'success','count'=>$orders['count'], 'data'=>$orders['data']]);
         }
         return view('YaCommerce::order.index', ['siteName'=>'微圈宝', 'shopId'=>$shopId]);
     }

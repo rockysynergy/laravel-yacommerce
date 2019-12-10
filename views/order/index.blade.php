@@ -6,8 +6,7 @@
     <nav class="nav__top">
         <div class="nav-item nav-item__new">
             <button type="button" class="layui-btn"><i class="layui-icon layui-icon-add-1"></i>添加</button>
-        </div>
-        <div>
+
             {{-- 搜索表单 --}}
             <div class="layui-inline">
                 <input class="layui-input filter-form-input" name="filterName" id="filterName" placeholder="收件人" autocomplete="off">
@@ -120,7 +119,7 @@
             // 刷新
             $('.content__apps').on('click', '#btn-refresh', e => {
                 $('.filter-form-input').val('')
-                activityListTable.reload({
+                orderTable.reload({
                     url: '/admin/shop_order/index/'+shopId+'?m=fetch'
                 })
             })
@@ -137,7 +136,7 @@
                 let filterCreatedAt = $('#filterCreatedAt').val()
                 url += filterCreatedAt ? '&filterCreatedAt='+filterCreatedAt : ''
 
-                activityListTable.reload({
+                orderTable.reload({
                     url: url,
                     page: {
                         curr: 1

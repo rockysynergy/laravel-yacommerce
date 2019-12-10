@@ -99,12 +99,12 @@ class OrderRepository extends AbstractRepository
         // return self::find([['ptype', '=', $ptype], ['pid', '=', $pid]])->toArray();
         $aQuery = DB::table(self::$table);
         if (isset($filter['filterOrderNumber'])) $aQuery = $aQuery->where('order_number', '=', $filter['filterOrderNumber']);
-        if (isset($filter['filterCreatedAt'])) $aQuery = $aQuery->where('order_number', '=', $filter['filterCreatedAt']);
+        if (isset($filter['filterCreatedAt'])) $aQuery = $aQuery->whereDate('created_at', $filter['filterCreatedAt']);
 
         $query = DB::table('yac_shipaddresses as B');
-        if (isset($filter['filterName'])) $query = $query->where('name', '=', $filter['filterName']);
-        if (isset($filter['filterMobile'])) $query = $query->where('mobile', '=', $filter['filterMobile']);
-        $query->leftJoinSub($query, 'A', function ($join) use ($ptype, $pid) {
+        if (isset($filter['filterName'])) $query = $query->where('name', '=', "%{$filter['filterName']}");
+        if (isset($filter['filterMobile'])) $query = $query->where('mobile', '=', "%{$filter['filterMobile']}");
+        $query->leftJoinSub($aQuery, 'A', function ($join) use ($ptype, $pid) {
             $join->on('A.shipaddress_id', '=', 'B.id')
             ->select('A.*', 'B.name', 'B.mobile', 'B.address')
             ->where('A.ptype', '=', $ptype)
