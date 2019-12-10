@@ -6,13 +6,16 @@ use Orq\DddBase\ModelFactory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Orq\Laravel\YaCommerce\Order\Model\Order;
-use Orq\Laravel\YaCommerce\Order\Model\OrderItem;
 use Orq\DddBase\Repository\AbstractRepository;
-use App\MicroGroup\Domain\IllegalArgumentException;
+use Orq\Laravel\YaCommerce\BeListTrait;
+use Orq\Laravel\YaCommerce\Order\Model\OrderItem;
+use Orq\Laravel\YaCommerce\IllegalArgumentException;
 use Orq\Laravel\YaCommerce\Shipment\Repository\ShipTrackingRepository;
 
 class OrderRepository extends AbstractRepository
 {
+    use BeListTrait;
+
     protected static $table = 'yac_orders';
     protected static $class = Order::class;
 
@@ -91,16 +94,24 @@ class OrderRepository extends AbstractRepository
     /**
      * For admin order listing
      */
-    public static function findAllFor(string $ptype, int $pid)
+    public static function findAllFor(string $ptype, int $pid, array $filter)
     {
         // return self::find([['ptype', '=', $ptype], ['pid', '=', $pid]])->toArray();
-        return DB::table(self::$table . ' as A')
-            ->leftJoin('yac_shipaddresses as B', 'A.shipaddress_id', '=', 'B.id')
+        $aQuery = DB::table(self::$table);
+        if (isset($filter['filterOrderNumber'])) $aQuery = $aQuery->where('order_number', '=', $filter['filterOrderNumber']);
+        if (isset($filter['filterCreatedAt'])) $aQuery = $aQuery->where('order_number', '=', $filter['filterCreatedAt']);
+
+        $query = DB::table('yac_shipaddresses as B');
+        if (isset($filter['filterName'])) $query = $query->where('name', '=', $filter['filterName']);
+        if (isset($filter['filterMobile'])) $query = $query->where('mobile', '=', $filter['filterMobile']);
+        $query->leftJoinSub($query, 'A', function ($join) use ($ptype, $pid) {
+            $join->on('A.shipaddress_id', '=', 'B.id')
             ->select('A.*', 'B.name', 'B.mobile', 'B.address')
             ->where('A.ptype', '=', $ptype)
-            ->where('A.pid', '=', $pid)
-            ->get()
-            ->toArray();
+            ->where('A.pid', '=', $pid);
+        });
+
+        return self::paginate($query, $filter);
     }
 
     public static function findByIdWithTracking(int $id)

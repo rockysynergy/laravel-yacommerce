@@ -21,7 +21,7 @@ class YacOrderService
     public static function getOrdersForShop(int $shopId): array
     {
         $shopType = ShopRepository::getType($shopId)->type;
-        $result = OrderRepository::findAllFor($shopType, $shopId);
+        $result = OrderRepository::findAllFor($shopType, $shopId, $filter);
         return $result;
     }
 
