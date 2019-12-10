@@ -12,7 +12,7 @@ class YacOrderController extends Controller
     public function index($shopId, Request $request)
     {
         if ($request->input('m') == 'fetch') {
-            $orders = YacOrderService::getOrdersForShop($shopId);
+            $orders = YacOrderService::getOrdersForShop($shopId, $request->all());
             return response()->json(['code'=>'0','msg'=>'success','count'=>count($orders), 'data'=>$orders]);
         }
         return view('YaCommerce::order.index', ['siteName'=>'微圈宝', 'shopId'=>$shopId]);
