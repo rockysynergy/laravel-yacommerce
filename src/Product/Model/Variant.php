@@ -4,7 +4,7 @@ namespace Orq\Laravel\YaCommerce\Product\Model;
 use Illuminate\Support\Facades\Log;
 use Orq\Laravel\YaCommerce\IllegalArgumentException;
 
-class Product extends AbstractProduct
+class Variant extends AbstractProduct
 {
     protected $table = 'yac_products';
 
@@ -14,4 +14,10 @@ class Product extends AbstractProduct
      * @var array
      */
     protected $guarded = [];
+
+    protected function makeRules()
+    {
+        $rules = parent::makeRules();
+        $rules['pid'] = 'required|gte:1';
+    }
 }

@@ -11,19 +11,15 @@ abstract class OrmModel extends Model
     use SoftDeletes;
 
     /**
-     * The validation rules
-     */
-    protected static $rules = [ ];
-
-    /**
      * validate the data which which will store into the database
      *
      * @exception(DomainException)
      */
-    public static function validate(array $data): void
+    public function validate(array $data): void
     {
-        $messages = self::makeMessages(static::$rules);
-        $validator = Validator::make($data, static::$rules, $messages);
+        $rules = $this->getRules();
+        $messages = $this->makeMessages($rules);
+        $validator = Validator::make($data, $rules, $messages);
 
         $errorMsgs = $validator->errors()->all();
         if (count($errorMsgs) > 0) {
@@ -31,7 +27,7 @@ abstract class OrmModel extends Model
         }
     }
 
-    protected static function makeMessages(array $rules):array
+    protected function makeMessages(array $rules):array
     {
         $msg = [];
         foreach ($rules as $k => $v) {

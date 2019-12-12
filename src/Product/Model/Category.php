@@ -1,30 +1,33 @@
 <?php
+
 namespace Orq\Laravel\YaCommerce\Product\Model;
 
-use Orq\DddBase\IdTrait;
-use Orq\DddBase\AbstractEntity;
+use Orq\Laravel\YaCommerce\OrmModel;
 
-class Category extends AbstractEntity
+class Category extends OrmModel
 {
-    use IdTrait;
 
-    protected $fieldsConf = [
-        'title' => ['maxStrLen:100', [['类别不能多于100个字符', 1565331955]]],
-        'pic' => ['maxStrLen:120', [['类别图片地址不能多于120个字符', 1565332035]]],
-        'parentId' => ['validId', [['请提供合法的类别id', 1565332088]]],
-        'shopId' => ['validId', [['请提供合法的商铺id', 1565332125]]],
-    ];
+    protected $table = 'yac_categories';
 
-    public function getPersistData():array
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [];
+
+    /**
+     * Make validation rules for the model
+     */
+    protected function makeRules()
     {
-        $arr = [];
-        $arr['title'] = $this->title;
-        $arr['shop_id'] = $this->shopId;
-        if ($this->id) $arr['id'] = $this->id;
-        if ($this->pic) $arr['pic'] = $this->pic;
-        if ($this->parentId) $arr['parent_id'] = $this->parentId;
-
-        return $arr;
+        return [
+            'title' => 'max:100',
+            'pic' => 'max:120',
+            'pid' => 'gte:0',
+            'shopId' => 'gte:1',
+        ];
     }
 
+    
 }
