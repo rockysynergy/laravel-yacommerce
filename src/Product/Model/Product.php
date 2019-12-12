@@ -1,31 +1,37 @@
 <?php
 namespace Orq\Laravel\YaCommerce\Product\Model;
 
-use Orq\DddBase\IdTrait;
-use Orq\DddBase\AbstractEntity;
 use Illuminate\Support\Facades\Log;
 use Orq\DddBase\IllegalArgumentException;
+use Orq\Laravel\YaCommerce\OrmModel;
 
-class Product extends AbstractEntity
+class Product extends OrmModel
 {
-    use IdTrait;
+    protected $table = 'fx_members';
 
-    protected $fieldsConf = [
-        'id' => ['validId', [['请提供合法的id', 1565332392]]],
-        'title' => ['maxStrLen:100', [['商品名称不能多于100个字符', 1565332430]]],
-        'coverPic' => ['maxStrLen:300', [['头图不能多于300个字符', 1565332481]]],
-        'description' => ['maxStrLen:2000', [['详情不能多于2000个字符', 1565332518]]],
-        'price' => ['positiveNumber', [['请提供合法的价格', 1565332557]]],
-        'showPrice' => ['positiveNumber', [['请提供合法的价格', 1570762236]]],
-        'pictures' => ['maxStrLen:500', [['图片不能多于500个字符', 1565332604]]],
-        'categoryId' => ['validId', [['请提供合法的类别id', 1565332642]]],
-        'inventory' => ['positiveNumber', [['请提供合法的库存', 1565744941]]],
-        'status' => ['inList:0,1', [['请提供合法的状态', 1565840760]]],
-        'parameters' => ['maxStrLen:3000', [['参数不能超过3000个字符', 1570606501]]], // Has setMethod
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = [];
+
+    protected static $rules = [
+        'title' => 'required|max:100',
+        'coverPic' => 'required|max:300',
+        'description' => 'max:20000',
+        'price' => 'gte:0',
+        'showPrice' => 'gte:0',
+        'pictures' => 'max:500',
+        'categoryId' => 'gte:0',
+        'inventory' => 'gte:0',
+        'status' => 'in:0,1',
+        'parameters' => 'max:3000',
     ];
 
     public function getPersistData():array
     {
+
         $arr = [];
         $arr['title'] = $this->title;
         $arr['category_id'] = $this->categoryId;
