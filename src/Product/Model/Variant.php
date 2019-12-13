@@ -2,7 +2,6 @@
 namespace Orq\Laravel\YaCommerce\Product\Model;
 
 use Illuminate\Support\Facades\Log;
-use Orq\Laravel\YaCommerce\IllegalArgumentException;
 
 class Variant extends AbstractProduct
 {

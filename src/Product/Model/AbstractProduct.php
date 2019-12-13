@@ -16,14 +16,14 @@ abstract class AbstractProduct extends OrmModel
     {
         return [
             'title' => 'required|max:100',
-            'coverPic' => 'required|max:300',
-            'description' => 'max:20000',
-            'price' => 'gte:0',
-            'showPrice' => 'gte:0',
+            'cover_pic' => 'required|max:300',
+            'description' => 'required|max:20000',
+            'price' => 'required|gte:0',
+            'show_price' => 'gte:0',
             'pictures' => 'max:500',
-            'categoryId' => 'gte:0',
-            'inventory' => 'gte:0',
-            'status' => 'in:0,1',
+            'category_id' => 'required|gte:0',
+            'inventory' => 'required|gte:0',
+            'status' => 'required|in:0,1',
             'parameters' => 'max:3000',
         ];
     }

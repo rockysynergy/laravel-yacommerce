@@ -22,6 +22,11 @@ class CreateYacCategories extends Migration
 
             $table->unsignedBigInteger('shop_id')->comment('店铺id');
             $table->foreign('shop_id')->references('id')->on('yac_shops');
+            $table->softDeletes();
+            $table->timestamps();
+
+            $table->unsignedInteger('_lft');
+            $table->unsignedInteger('_rgt');
         });
     }
 

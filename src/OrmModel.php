@@ -17,7 +17,7 @@ abstract class OrmModel extends Model
      */
     public function validate(array $data): void
     {
-        $rules = $this->getRules();
+        $rules = $this->makeRules();
         $messages = $this->makeMessages($rules);
         $validator = Validator::make($data, $rules, $messages);
 
@@ -26,6 +26,8 @@ abstract class OrmModel extends Model
             throw new IllegalArgumentException($errorMsgs[0], 1573629695);
         }
     }
+
+    abstract protected function makeRules();
 
     protected function makeMessages(array $rules):array
     {
@@ -37,17 +39,34 @@ abstract class OrmModel extends Model
             foreach ($aRules as $aRule) {
                 $ruleBits = explode(':', $aRule);
                 $rKey = $ruleBits[0];
-                $ruleAttr = explode(',', $ruleBits[1]);
-
                 $repMsg = [];
-                if (count($ruleAttr) == 1) $repMsg['first'] = $ruleBits[0];
-                if (count($ruleAttr) == 2) $repMsg['second'] = $ruleBits[1];
-                if (count($ruleAttr) == 3) $repMsg['third'] = $ruleBits[2];
+                $repMsg['field'] = trans("YaCommerce::fields.product.{$attr}");
 
-                $msg["{$attr}.${rKey}"] = trans("YaCommerce:validation.{$rKey}", $repMsg);
+                if (count($ruleBits) > 1) {
+                    $ruleAttr = explode(',', $ruleBits[1]);
+
+                    if (count($ruleAttr) == 1) $repMsg['first'] = $ruleAttr[0];
+                    if (count($ruleAttr) == 2) $repMsg['second'] = $ruleAttr[1];
+                    if (count($ruleAttr) == 3) $repMsg['third'] = $ruleAttr[2];
+                }
+
+                $msg["{$attr}.${rKey}"] = trans("YaCommerce::validation.{$rKey}", $repMsg);
             }
         }
 
         return $msg;
+    }
+
+
+    /**
+     * make new instance
+     */
+    protected function makeInstance(array $data, OrmModel $instance = null)
+    {
+        $instance = is_null($instance) ? new static() : $instance;
+        foreach ($data as $k => $v) {
+            $instance->$k = $v;
+        }
+        return $instance;
     }
 }
