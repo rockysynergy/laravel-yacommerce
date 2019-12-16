@@ -1,5 +1,5 @@
 <?php
-namespace Orq\Laravel\YaCommerce\Product\Model;
+namespace Orq\Laravel\YaCommerce\Domain\Product\Model;
 
 use Illuminate\Support\Facades\Log;
 
@@ -13,4 +13,5 @@ class Product extends AbstractProduct
      * @var array
      */
     protected $guarded = [];
+
 }

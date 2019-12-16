@@ -6,7 +6,7 @@ use Tests\MakeStringTrait;
 
 use Orchestra\Testbench\TestCase;;
 use Illuminate\Support\Facades\App;
-use Orq\Laravel\YaCommerce\Product\Model\Product;
+use Orq\Laravel\YaCommerce\Domain\Product\Model\Product;
 
 class ProductTest extends TestCase
 {

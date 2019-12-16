@@ -1,9 +1,9 @@
 <?php
 
-namespace Orq\Laravel\YaCommerce\Product\Model;
+namespace Orq\Laravel\YaCommerce\Domain\Product\Model;
 
 use Illuminate\Support\Facades\Log;
-use Orq\Laravel\YaCommerce\OrmModel;
+use Orq\Laravel\YaCommerce\Domain\OrmModel;
 use Orq\Laravel\YaCommerce\IllegalArgumentException;
 
 abstract class AbstractProduct extends OrmModel
@@ -12,7 +12,7 @@ abstract class AbstractProduct extends OrmModel
     /**
      * Make validation rules for the model
      */
-    protected function makeRules()
+    protected function makeRules():array
     {
         return [
             'title' => 'required|max:100',
@@ -25,6 +25,8 @@ abstract class AbstractProduct extends OrmModel
             'inventory' => 'required|gte:0',
             'status' => 'required|in:0,1',
             'parameters' => 'max:3000',
+            'model' => 'max:300',
+            'variants' => 'max:70',
         ];
     }
 
@@ -68,4 +70,5 @@ abstract class AbstractProduct extends OrmModel
 
         $this->decrement('inventory', $num);
     }
+
 }

@@ -1,19 +1,49 @@
 <?php
 
-namespace Orq\Laravel\YaCommerce;
+namespace Orq\Laravel\YaCommerce\Domain;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Orq\Laravel\YaCommerce\IllegalArgumentException;
 
 abstract class OrmModel extends Model
 {
     use SoftDeletes;
 
     /**
+     * @throws Orq\Laravel\YaCommerce\IllegalArgumentException
+     */
+    public function createNew(array $data):void
+    {
+        try {
+            $this->validate($data);
+            $model = $this->makeInstance($data);
+            $model->save();
+        } catch (IllegalArgumentException $e) {
+            throw $e;
+        }
+    }
+
+    /**
+     * @throws Orq\Laravel\YaCommerce\IllegalArgumentException
+     */
+    public function updateInstance(array $data):void
+    {
+        if (!isset($data['id'])) throw new IllegalArgumentException(trans("YaCommerce::message.update_no-id"), 1576220777);
+        try {
+            $this->validate($data);
+            $model = $this->makeInstance($data, static::find($data['id']));
+            $model->save();
+        } catch (IllegalArgumentException $e) {
+            throw $e;
+        }
+    }
+
+    /**
      * validate the data which which will store into the database
      *
-     * @exception(DomainException)
+     * @throws Orq\Laravel\YaCommerce\IllegalArgumentException
      */
     public function validate(array $data): void
     {
@@ -27,7 +57,7 @@ abstract class OrmModel extends Model
         }
     }
 
-    abstract protected function makeRules();
+    abstract protected function makeRules():array;
 
     protected function makeMessages(array $rules):array
     {

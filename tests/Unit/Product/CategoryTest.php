@@ -5,12 +5,11 @@ namespace Tests\YaCommerce\Unit\Product;
 use Orchestra\Testbench\TestCase;;
 
 use Tests\MakeStringTrait;
-use Orq\Laravel\YaCommerce\Product\Model\Category;
+use Orq\Laravel\YaCommerce\Domain\Product\Model\Category;
 
 class CategoryTest extends TestCase
 {
     use MakeStringTrait;
-
 
     /**
      * @test
@@ -21,6 +20,7 @@ class CategoryTest extends TestCase
         $data = ['id' => 2, 'title' => '卫浴用品', 'pic' => 'path/to/category_pic.jpg', 'parent_id' => -2, 'shop_id' => 1];
         $category = new Category();
         $category->validate($data);
+        // $this->assertEquals('a', 'b');
     }
 
 }

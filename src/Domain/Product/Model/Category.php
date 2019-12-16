@@ -1,10 +1,10 @@
 <?php
 
-namespace Orq\Laravel\YaCommerce\Product\Model;
+namespace Orq\Laravel\YaCommerce\Domain\Product\Model;
 
 use Kalnoy\Nestedset\NodeTrait;
-use Orq\Laravel\YaCommerce\OrmModel;
-use Illuminate\Database\Eloquent\Collection;
+use Kalnoy\Nestedset\Collection;
+use Orq\Laravel\YaCommerce\Domain\OrmModel;
 use Orq\Laravel\YaCommerce\IllegalArgumentException;
 
 /**
@@ -34,7 +34,7 @@ class Category extends OrmModel
     /**
      * Make validation rules for the model
      */
-    protected function makeRules()
+    protected function makeRules():array
     {
         return [
             'title' => 'max:100',
@@ -48,7 +48,7 @@ class Category extends OrmModel
      * Add new category node
      * If `parent_id` is provided, it will append to the parent
      */
-    public function createNew(array $data)
+    public function createNew(array $data):void
     {
         try {
             $this->validate($data);
@@ -61,14 +61,15 @@ class Category extends OrmModel
 
     /**
      * Update category
+     *
+     * @throws Orq\Laravel\YaCommerce\IllegalArgumentException
      */
     public function updateInstance(array $data):void
     {
         if (!isset($data['id'])) throw new IllegalArgumentException(trans("YaCommerce::message.update_no-id"), 1576220777);
         try {
             $this->validate($data);
-            $node = self::find($data['id']);
-            $this->makeInstance($data, $node);
+            $node = $this->makeInstance($data, self::find($data['id']));
             $this->insert($node, $data);
         } catch (IllegalArgumentException $e) {
             throw $e;
@@ -95,11 +96,12 @@ class Category extends OrmModel
      *
      * @param int $shopId The shop Id
      * @param bool $includeTrashed
-     * @return Illuminate\Database\Eloquent\Collection
+     * @return Kalnoy\Nestedset\Collection
      */
-    public function getAllForShop(int $shopId, bool $includeTrashed = false): Collection
+    public function getAllForShop(int $shopId, array $filter = [], bool $includeTrashed = false): Collection
     {
         $query = self::where('shop_id', '=', $shopId);
+        if (isset($filter['title'])) $query = $query->where('title', 'like', "%{$filter['title']}%");
         if ($includeTrashed) $query = $query->withTrashed();
         return $query->get()->toTree();
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Orq\Laravel\YaCommerce;
+namespace Orq\Laravel\YaCommerce\Domain;
 
 interface UserInterface
 {

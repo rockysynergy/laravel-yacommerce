@@ -5,8 +5,9 @@ namespace Tests\YaCommerce\Functional\Product;
 
 use Tests\DbTestCase;
 use Illuminate\Support\Facades\DB;
-use Orq\Laravel\YaCommerce\Product\Service\ProductService;
+use Orq\Laravel\YaCommerce\Domain\Product\Service\ProductService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Orq\Laravel\YaCommerce\Domain\Product\Model\Product;
 
 class ProductServiceTest  extends DbTestCase
 {
@@ -14,6 +15,24 @@ class ProductServiceTest  extends DbTestCase
 
     /**
      * @test
+     */
+    public function create()
+    {
+        $shop = [ 'id' => 3, 'name' => '积分商城'];
+        DB::table('yac_shops')->insert($shop);
+        $category = ['id'=> 4, 'title'=>'生活用品', 'shop_id'=>3];
+        DB::table('yac_categories')->insert($category);
+
+        $product = new Product();
+        $productService = new ProductService($product);
+        $pData = ['id'=>3, 'title'=>'羽毛球拍', 'category_id'=>4, 'inventory'=>3];
+        $productService->create($pData);
+
+        $this->assertDatabaseHas('yac_products', $pData);
+    }
+
+
+    /**
      */
     public function getByProductId()
     {
@@ -32,7 +51,6 @@ class ProductServiceTest  extends DbTestCase
     }
 
     /**
-     * @test
      */
     public function decInventoryThrowsExceptionWhenNotEnough()
     {
@@ -48,7 +66,6 @@ class ProductServiceTest  extends DbTestCase
     }
 
     /**
-     * @test
      */
     public function decInventory()
     {
@@ -65,7 +82,6 @@ class ProductServiceTest  extends DbTestCase
     }
 
     /**
-     * @test
      */
     public function incInventoryForProducts()
     {

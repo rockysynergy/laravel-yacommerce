@@ -25,8 +25,8 @@ class CreateYacCategories extends Migration
             $table->softDeletes();
             $table->timestamps();
 
-            $table->unsignedInteger('_lft');
-            $table->unsignedInteger('_rgt');
+            $table->unsignedInteger('_lft')->nullable()->comment('used for tree node');
+            $table->unsignedInteger('_rgt')->nullable()->comment('used for tree node');
         });
     }
 

@@ -1,5 +1,5 @@
 <?php
-namespace Orq\Laravel\YaCommerce\Product\Model;
+namespace Orq\Laravel\YaCommerce\Domain\Product\Model;
 
 use Illuminate\Support\Facades\Log;
 
@@ -14,9 +14,11 @@ class Variant extends AbstractProduct
      */
     protected $guarded = [];
 
-    protected function makeRules()
+    protected function makeRules():array
     {
         $rules = parent::makeRules();
-        $rules['pid'] = 'required|gte:1';
+        $rules['parent_id'] = 'required|gte:1';
+
+        return $rules;
     }
 }
