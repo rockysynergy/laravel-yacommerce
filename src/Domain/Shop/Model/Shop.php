@@ -1,7 +1,7 @@
 <?php
-namespace Orq\Laravel\YaCommerce\Shop\Model;
+namespace Orq\Laravel\YaCommerce\Domain\Shop\Model;
 
-use Orq\Laravel\YaCommerce\OrmModel;
+use Orq\Laravel\YaCommerce\Domain\OrmModel;
 
 class Shop extends OrmModel
 {
@@ -14,7 +14,8 @@ class Shop extends OrmModel
      */
     protected $guarded = [];
 
-    protected function getRules() {
+    protected function makeRules():array
+    {
         return [
             'name' => 'max:120',
             'type' => 'max:100',

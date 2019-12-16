@@ -1,8 +1,8 @@
 <?php
-namespace Orq\Laravel\YaCommerce\Shop\Repository;
+namespace Orq\Laravel\YaCommerce\Domain\Shop\Repository;
 
 use Illuminate\Support\Facades\DB;
-use Orq\Laravel\YaCommerce\Shop\Model\Shop;
+use Orq\Laravel\YaCommerce\Domain\Shop\Model\Shop;
 use Orq\DddBase\Repository\AbstractRepository;
 use Orq\Laravel\YaCommerce\Product\Repository\CategoryRepository;
 

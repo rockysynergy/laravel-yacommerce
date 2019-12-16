@@ -17,7 +17,7 @@ Route::namespace('Admin')->prefix('admin')->name('admin.')->group(function () {
 6. For bpshop add below to register method of `App\Providers\AppServiceProvider`
 ```PHP
     $this->app->bind(
-        'Orq\Laravel\YaCommerce\Order\PrepaidUserInterface',
+        'Orq\Laravel\YaCommerce\Domain\Order\PrepaidUserInterface',
         'App\Service\BpshopUserService'
     );
 ```

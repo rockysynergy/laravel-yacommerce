@@ -3,7 +3,7 @@
 namespace Tests\YaCommerce\Functional\Order;
 
 
-use Orq\Laravel\YaCommerce\Order\Service\CartItemService;
+use Orq\Laravel\YaCommerce\Domain\Order\Service\CartItemService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\DbTestCase;

@@ -2,11 +2,11 @@
 
 namespace Tests\YaCommerce\Functional\Shop\Repository;
 
-use Orq\Laravel\YaCommerce\Shop\Repository\ShopRepository;
+use Orq\Laravel\YaCommerce\Domain\Shop\Repository\ShopRepository;
 use Tests\DbTestCase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Orq\Laravel\YaCommerce\Shop\Service\ShopService;
+use Orq\Laravel\YaCommerce\Domain\Shop\Service\ShopService;
 
 class ShopServiceTest  extends DbTestCase
 {

@@ -1,9 +1,9 @@
 <?php
 
-namespace Orq\Laravel\YaCommerce\Order\Repository;
+namespace Orq\Laravel\YaCommerce\Domain\Order\Repository;
 
 use Illuminate\Support\Facades\DB;
-use Orq\Laravel\YaCommerce\Order\Model\CartItem;
+use Orq\Laravel\YaCommerce\Domain\Order\Model\CartItem;
 use Orq\DddBase\Repository\AbstractRepository;
 use App\MicroGroup\Domain\IllegalArgumentException;
 use Orq\Laravel\YaCommerce\Product\Repository\ProductRepository;

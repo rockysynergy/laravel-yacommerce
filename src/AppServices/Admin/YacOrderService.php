@@ -7,11 +7,11 @@ use Orq\DddBase\ModelFactory;
 use Orq\DddBase\DomainException;
 use Orq\DddBase\IllegalArgumentException;
 use Illuminate\Support\Facades\Log;
-use Orq\Laravel\YaCommerce\Order\Model\Order;
+use Orq\Laravel\YaCommerce\Domain\Order\Model\Order;
 use Orq\Laravel\YaCommerce\Events\ChangeShipnumber;
 use Orq\Laravel\YaCommerce\Shipment\Model\ShipTracking;
-use Orq\Laravel\YaCommerce\Shop\Repository\ShopRepository;
-use Orq\Laravel\YaCommerce\Order\Repository\OrderRepository;
+use Orq\Laravel\YaCommerce\Domain\Shop\Repository\ShopRepository;
+use Orq\Laravel\YaCommerce\Domain\Order\Repository\OrderRepository;
 use Orq\Laravel\YaCommerce\Shipment\Repository\ShipAddressRepository;
 use Orq\Laravel\YaCommerce\Shipment\Repository\ShipTrackingRepository;
 

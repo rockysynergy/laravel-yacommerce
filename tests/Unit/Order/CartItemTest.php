@@ -6,7 +6,7 @@ use Tests\MakeStringTrait;
 
 use Orq\DddBase\ModelFactory;
 use Orchestra\Testbench\TestCase;;
-use Orq\Laravel\YaCommerce\Order\Model\CartItem;
+use Orq\Laravel\YaCommerce\Domain\Order\Model\CartItem;
 
 class CartItemTest extends TestCase
 {

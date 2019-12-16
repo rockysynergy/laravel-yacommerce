@@ -5,7 +5,7 @@ use Illuminate\Http\Request;
 use Orq\DddBase\DomainException;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use Orq\Laravel\YaCommerce\Shop\Repository\ShopRepository;
+use Orq\Laravel\YaCommerce\Domain\Shop\Repository\ShopRepository;
 use Orq\Laravel\YaCommerce\AppServices\Admin\YacProductService;
 use Orq\Laravel\YaCommerce\AppServices\Admin\YacCategoryService;
 

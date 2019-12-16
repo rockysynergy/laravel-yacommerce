@@ -6,7 +6,7 @@ use Tests\DbTestCase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Orq\Laravel\YaCommerce\Shipment\Service\ShipAddressService;
-use Orq\Laravel\YaCommerce\UserInterface;
+use Orq\Laravel\YaCommerce\Domain\UserInterface;
 
 class ShipAddressServiceTest  extends DbTestCase
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace Orq\Laravel\YaCommerce\Order\Service;
+namespace Orq\Laravel\YaCommerce\Domain\Order\Service;
 
 use Orq\DddBase\ModelFactory;
-use Orq\Laravel\YaCommerce\Order\Model\CartItem;
-use Orq\Laravel\YaCommerce\Order\Repository\CartItemRepository;
+use Orq\Laravel\YaCommerce\Domain\Order\Model\CartItem;
+use Orq\Laravel\YaCommerce\Domain\Order\Repository\CartItemRepository;
 
 class CartItemService
 {

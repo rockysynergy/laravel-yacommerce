@@ -5,8 +5,8 @@ namespace Tests\YaCommerce\Unit\Order;
 use Orchestra\Testbench\TestCase;;
 use Tests\MakeStringTrait;
 use Orq\DddBase\ModelFactory;
-use Orq\Laravel\YaCommerce\Order\Model\Order;
-use Orq\Laravel\YaCommerce\Order\Model\OrderItem;
+use Orq\Laravel\YaCommerce\Domain\Order\Model\Order;
+use Orq\Laravel\YaCommerce\Domain\Order\Model\OrderItem;
 
 class OrderTest extends TestCase
 {

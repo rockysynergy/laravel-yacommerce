@@ -17,6 +17,7 @@
     "require": {
         "illuminate/support": "^6.2.0",
         "orq/wxpay": "1.0.0",
+        "orq/laravel-dddbase": "^0.1.0",
         "kalnoy/nestedset": "^5.0"
     },
     "extra": {

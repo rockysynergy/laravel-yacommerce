@@ -23,9 +23,18 @@ class ProductServiceTest  extends DbTestCase
         $category = ['id'=> 4, 'title'=>'生活用品', 'shop_id'=>3];
         DB::table('yac_categories')->insert($category);
 
-        $product = new Product();
-        $productService = new ProductService($product);
-        $pData = ['id'=>3, 'title'=>'羽毛球拍', 'category_id'=>4, 'inventory'=>3];
+        $productService = new ProductService('product');
+        $pData = [
+            'id' => 2,
+            'title' => '电风扇',
+            'cover_pic' => '/storage/pics/fans.jpg',
+            'description' => '商品详情描述',
+            'price' => 5432,
+            'pictures' => 'pic_1.jpg, pic_2.jpg, pic_3.jpg',
+            'category_id' => $category['id'],
+            'inventory' => 0,
+            'status' => 1,
+        ];
         $productService->create($pData);
 
         $this->assertDatabaseHas('yac_products', $pData);
@@ -33,39 +42,54 @@ class ProductServiceTest  extends DbTestCase
 
 
     /**
+     * @test
      */
-    public function getByProductId()
+    public function getProductById()
     {
-        $shop = [
-            'id' => 3,
-            'name' => '积分商城'
-        ];
-        DB::table('yac_shops')->insert($shop);
-        $category = ['id'=> 4, 'title'=>'生活用品', 'shop_id'=>3];
-        DB::table('yac_categories')->insert($category);
-        $product = ['id'=>3, 'title'=>'羽毛球拍', 'category_id'=>4];
-        DB::table('yac_products')->insert($product);
-
-        $result = ProductService::getById(3);
-        $this->assertEquals($product['title'], $result['title']);
-    }
-
-    /**
-     */
-    public function decInventoryThrowsExceptionWhenNotEnough()
-    {
-        $this->expectExceptionCode(1565744840);
         $shop = [ 'id' => 3, 'name' => '积分商城'];
         DB::table('yac_shops')->insert($shop);
         $category = ['id'=> 4, 'title'=>'生活用品', 'shop_id'=>3];
         DB::table('yac_categories')->insert($category);
-        $product = ['id'=>3, 'title'=>'羽毛球拍', 'category_id'=>4, 'inventory'=>3];
-        DB::table('yac_products')->insert($product);
+        $pData = [
+            'id' => 2,
+            'title' => '电风扇',
+            'cover_pic' => '/storage/pics/fans.jpg',
+            'description' => '商品详情描述',
+            'price' => 5432,
+            'pictures' => 'pic_1.jpg, pic_2.jpg, pic_3.jpg',
+            'category_id' => $category['id'],
+            'inventory' => 0,
+            'status' => 1,
+        ];
+        DB::table('yac_products')->insert($pData);
 
-        ProductService::decInventory(3, 4, 'shop');
+        $productService = new ProductService('product');
+        $result = $productService->findById($pData['id']);
+
+        $this->assertEquals($pData['title'], $result->title);
     }
 
     /**
+     * @test
+     */
+    public function getVariantById()
+    {
+        $this->assertEquals('a', 'b');
+    }
+
+    /**
+     * @test
+     */
+    public function decInventoryThrowsExceptionWhenNoProductCanFind()
+    {
+        $this->expectExceptionCode(1576485686);
+
+        $productService = new ProductService('product');
+        $productService->decInventory(3, 2);
+    }
+
+    /**
+     * @test
      */
     public function decInventory()
     {
@@ -73,15 +97,38 @@ class ProductServiceTest  extends DbTestCase
         DB::table('yac_shops')->insert($shop);
         $category = ['id'=> 4, 'title'=>'生活用品', 'shop_id'=>3];
         DB::table('yac_categories')->insert($category);
-        $product = ['id'=>3, 'title'=>'羽毛球拍', 'category_id'=>4, 'inventory'=>3];
+        $product = [
+            'id' => 2,
+            'title' => '电风扇',
+            'cover_pic' => '/storage/pics/fans.jpg',
+            'description' => '商品详情描述',
+            'price' => 5432,
+            'pictures' => 'pic_1.jpg, pic_2.jpg, pic_3.jpg',
+            'category_id' => $category['id'],
+            'inventory' => 30,
+            'status' => 1,
+        ];
         DB::table('yac_products')->insert($product);
+        $productService = new ProductService('product');
+        $productService->decInventory($product['id'], 2);
 
-        ProductService::decInventory(3, 3, 'shop');
-        $d = DB::table('yac_products')->where('id', 3)->first();
-        $this->assertEquals(0, $d->inventory);
+        $prod = Product::find($product['id']);
+        $this->assertEquals(28, $prod->inventory);
     }
 
     /**
+     * @test
+     */
+    public function incInventoryThrowsExceptionWhenNoProductCanFind()
+    {
+        $this->expectExceptionCode(1576486738);
+
+        $productService = new ProductService('product');
+        $productService->incInventory(3, 2);
+    }
+
+    /**
+     * @test
      */
     public function incInventoryForProducts()
     {
@@ -89,15 +136,22 @@ class ProductServiceTest  extends DbTestCase
         DB::table('yac_shops')->insert($shop);
         $category = ['id'=> 4, 'title'=>'生活用品', 'shop_id'=>3];
         DB::table('yac_categories')->insert($category);
-        $product_1 = ['id'=>3, 'title'=>'羽毛球拍', 'category_id'=>4, 'inventory'=>3];
-        $product_2 = ['id'=>6, 'title'=>'羽毛', 'category_id'=>4, 'inventory'=>2];
-        DB::table('yac_products')->insert([$product_1, $product_2]);
+        $product = [
+            'id' => 2,
+            'title' => '电风扇',
+            'cover_pic' => '/storage/pics/fans.jpg',
+            'description' => '商品详情描述',
+            'price' => 5432,
+            'pictures' => 'pic_1.jpg, pic_2.jpg, pic_3.jpg',
+            'category_id' => $category['id'],
+            'inventory' => 30,
+            'status' => 1,
+        ];
+        DB::table('yac_products')->insert($product);
+        $productService = new ProductService('product');
+        $productService->incInventory($product['id'], 2);
 
-        ProductService::incInventoryForProducts([[3,2],[6, 5]], 'shop');
-        $d = DB::table('yac_products')->where('id', 3)->first();
-        $this->assertEquals(5, $d->inventory);
-
-        $d = DB::table('yac_products')->where('id', 6)->first();
-        $this->assertEquals(7, $d->inventory);
+        $prod = Product::find($product['id']);
+        $this->assertEquals(32, $prod->inventory);
     }
 }

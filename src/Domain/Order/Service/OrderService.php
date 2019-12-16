@@ -1,6 +1,6 @@
 <?php
 
-namespace Orq\Laravel\YaCommerce\Order\Service;
+namespace Orq\Laravel\YaCommerce\Domain\Order\Service;
 
 use App\User as AppUser;
 use Orq\DddBase\ModelFactory;
@@ -9,12 +9,12 @@ use App\MicroGroup\Domain\Model\User;
 use Orq\Laravel\YaCommerce\Payment\WxPay;
 use Illuminate\Support\Facades\Log;
 use Orq\Laravel\YaCommerce\Events\SavedOrder;
-use Orq\Laravel\YaCommerce\Order\Model\Order;
-use Orq\Laravel\YaCommerce\Order\OrderException;
-use Orq\Laravel\YaCommerce\Order\PrepaidUserInterface;
-use Orq\Laravel\YaCommerce\Order\Repository\CartItemRepository;
+use Orq\Laravel\YaCommerce\Domain\Order\Model\Order;
+use Orq\Laravel\YaCommerce\Domain\Order\OrderException;
+use Orq\Laravel\YaCommerce\Domain\Order\PrepaidUserInterface;
+use Orq\Laravel\YaCommerce\Domain\Order\Repository\CartItemRepository;
 use Orq\Laravel\YaCommerce\Shipment\Model\ShipAddress;
-use Orq\Laravel\YaCommerce\Order\Repository\OrderRepository;
+use Orq\Laravel\YaCommerce\Domain\Order\Repository\OrderRepository;
 use Orq\Laravel\YaCommerce\Product\Model\InvalidProductException;
 use Orq\Laravel\YaCommerce\Product\Model\InventoryException;
 use Orq\Laravel\YaCommerce\Shipment\Repository\ShipAddressRepository;

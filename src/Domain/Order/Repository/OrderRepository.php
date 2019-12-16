@@ -1,14 +1,14 @@
 <?php
 
-namespace Orq\Laravel\YaCommerce\Order\Repository;
+namespace Orq\Laravel\YaCommerce\Domain\Order\Repository;
 
 use Orq\DddBase\ModelFactory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Orq\Laravel\YaCommerce\Order\Model\Order;
+use Orq\Laravel\YaCommerce\Domain\Order\Model\Order;
 use Orq\DddBase\Repository\AbstractRepository;
 use Orq\Laravel\YaCommerce\BeListTrait;
-use Orq\Laravel\YaCommerce\Order\Model\OrderItem;
+use Orq\Laravel\YaCommerce\Domain\Order\Model\OrderItem;
 use Orq\Laravel\YaCommerce\IllegalArgumentException;
 use Orq\Laravel\YaCommerce\Shipment\Repository\ShipTrackingRepository;
 

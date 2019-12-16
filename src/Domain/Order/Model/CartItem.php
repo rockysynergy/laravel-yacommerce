@@ -1,5 +1,5 @@
 <?php
-namespace Orq\Laravel\YaCommerce\Order\Model;
+namespace Orq\Laravel\YaCommerce\Domain\Order\Model;
 
 use Orq\DddBase\IdTrait;
 use Orq\DddBase\AbstractEntity;

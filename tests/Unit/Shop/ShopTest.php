@@ -5,7 +5,7 @@ namespace Tests\YaCommerce\Unit\Shop\Model;
 use Orchestra\Testbench\TestCase;;
 use Tests\MakeStringTrait;
 use Orq\DddBase\ModelFactory;
-use Orq\Laravel\YaCommerce\Shop\Model\Shop;
+use Orq\Laravel\YaCommerce\Domain\Shop\Model\Shop;
 
 class ShopTest extends TestCase
 {

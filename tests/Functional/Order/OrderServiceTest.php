@@ -6,8 +6,8 @@ namespace Tests\YaCommerce\Functional\Order\Repository;
 use Tests\DbTestCase;
 use Orq\DddBase\ModelFactory;
 use Illuminate\Support\Facades\DB;
-use Orq\Laravel\YaCommerce\Order\PrepaidUserInterface;
-use Orq\Laravel\YaCommerce\Order\Service\OrderService;
+use Orq\Laravel\YaCommerce\Domain\Order\PrepaidUserInterface;
+use Orq\Laravel\YaCommerce\Domain\Order\Service\OrderService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\MakeStringTrait;
 

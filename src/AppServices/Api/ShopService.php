@@ -3,11 +3,11 @@
 namespace Orq\Laravel\YaCommerce\AppServices\Api;
 
 use Orq\DddBase\IllegalArgumentException;
-use Orq\Laravel\YaCommerce\Order\Service\OrderService;
-use Orq\Laravel\YaCommerce\Shop\Repository\ShopRepository;
+use Orq\Laravel\YaCommerce\Domain\Order\Service\OrderService;
+use Orq\Laravel\YaCommerce\Domain\Shop\Repository\ShopRepository;
 use Orq\Laravel\YaCommerce\Product\Repository\ProductRepository;
 use Orq\Laravel\YaCommerce\Product\Repository\ProductVariantRepository;
-use Orq\Laravel\YaCommerce\Shop\Service\ShopService as YacShopService;
+use Orq\Laravel\YaCommerce\Domain\Shop\Service\ShopService as YacShopService;
 use Orq\Laravel\YaCommerce\Product\Repository\SeckillProductRepository;
 
 class ShopService
@@ -65,7 +65,7 @@ class ShopService
 
         $data['ptype'] = $data['shop_type'];
         if (strtolower($data['shop_type']) == 'bp_shop') {
-            $bpService = \resolve('Orq\Laravel\YaCommerce\Order\PrepaidUserInterface', ['userId' => (int)$data['user_id']]);
+            $bpService = \resolve('Orq\Laravel\YaCommerce\Domain\Order\PrepaidUserInterface', ['userId' => (int)$data['user_id']]);
             OrderService::makePrepaidOrder($data, $bpService);
         }
 

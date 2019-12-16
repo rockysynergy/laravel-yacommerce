@@ -21,5 +21,17 @@ interface ProductServiceInterface {
      */
     public function getAllForShop(int $shopId, array $filter = [], bool $includeTrashed = false): Collection;
 
+    /**
+     * Decrease inventory by $num
+     *
+     * @throws Orq\Laravel\YaCommerce\IllegalArgumentException
+     */
+    public function decInventory(int $prodId, int $num):void;
 
+    /**
+     * Increase inventory by $num
+     *
+     * @throws Orq\Laravel\YaCommerce\IllegalArgumentException
+     */
+    public function incInventory(int $prodId, int $num):void;
 }

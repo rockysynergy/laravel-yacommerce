@@ -5,6 +5,7 @@ namespace Tests\YaCommerce\Unit\Product;
 use Tests\MakeStringTrait;
 
 use Orchestra\Testbench\TestCase;;
+
 use Illuminate\Support\Facades\App;
 use Orq\Laravel\YaCommerce\Domain\Product\Model\Product;
 
@@ -103,5 +104,36 @@ class ProductTest extends TestCase
         $product = new Product();
         $product->validate($data);
         $this->assertTrue(false);
+    }
+
+    /**
+     * @test
+     */
+    public function nonpositiveNumberForDecInventoryThrowsException()
+    {
+        $this->expectExceptionCode(1576138822);
+        $product = new Product();
+        $product->decInventory(0);
+    }
+
+    /**
+     * @test
+     */
+    public function decInventoryThrowsExceptionIfInventoryIsNotEnough()
+    {
+        $this->expectExceptionCode(1565744840);
+        $product = new Product();
+        $product->inventory = 30;
+        $product->decInventory(31);
+    }
+
+    /**
+     * @test
+     */
+    public function nonpositiveNumberForIncInventoryThrowsException()
+    {
+        $this->expectExceptionCode(1576138822);
+        $product = new Product();
+        $product->decInventory(0);
     }
 }

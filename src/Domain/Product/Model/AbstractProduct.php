@@ -26,7 +26,7 @@ abstract class AbstractProduct extends OrmModel
             'status' => 'required|in:0,1',
             'parameters' => 'max:3000',
             'model' => 'max:300',
-            'variants' => 'max:70',
+            'variants_id' => 'max:70',
         ];
     }
 
@@ -50,6 +50,9 @@ abstract class AbstractProduct extends OrmModel
         }
     }
 
+    /**
+     * @throws Orq\Laravel\YaCommerce\IllegalArgumentException
+     */
     public function decInventory(int $num): void
     {
         if ($num < 1) {
@@ -68,7 +71,7 @@ abstract class AbstractProduct extends OrmModel
             throw new IllegalArgumentException(trans('YaCommerce:message.inventory_not-positive'), 1576138822);
         }
 
-        $this->decrement('inventory', $num);
+        $this->increment('inventory', $num);
     }
 
 }

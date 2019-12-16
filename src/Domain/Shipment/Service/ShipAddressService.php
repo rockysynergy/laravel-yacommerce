@@ -18,7 +18,7 @@ class ShipAddressService
     }
 
     /**
-     * @param Orq\Laravel\YaCommerce\UserInterface
+     * @param Orq\Laravel\YaCommerce\Domain\UserInterface
      */
     public static function getAllForUser($userId):array
     {

@@ -1,5 +1,5 @@
 <?php
-namespace Orq\Laravel\YaCommerce\Order;
+namespace Orq\Laravel\YaCommerce\Domain\Order;
 
 interface PrepaidUserInterface
 {

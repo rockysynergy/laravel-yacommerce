@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Orq\Laravel\YaCommerce\AppServices\Admin\YacCategoryService;
-use Orq\Laravel\YaCommerce\Shop\Repository\ShopRepository;
+use Orq\Laravel\YaCommerce\Domain\Shop\Repository\ShopRepository;
 
 class YacCategoryController extends Controller
 {

@@ -13,7 +13,7 @@ use Orq\Laravel\YaCommerce\IllegalArgumentException;
  *
  * @author rockysynergy@qq.com
  */
-class CategoryService extends AbstractCrudService implements CategoryServiceInterface
+class CategoryService extends AbstractCrudService implements CategoryServiceInterface, CrudInterface
 {
 
     public function __construct(Category $category)

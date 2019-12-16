@@ -1,11 +1,11 @@
 <?php
-namespace Orq\Laravel\YaCommerce\Shop\Service;
+namespace Orq\Laravel\YaCommerce\Domain\Shop\Service;
 
 use Orq\DddBase\ModelFactory;
-use Orq\Laravel\YaCommerce\Shop\Model\Shop;
+use Orq\Laravel\YaCommerce\Domain\Shop\Model\Shop;
 use Illuminate\Support\Facades\Log;
 use Orq\Laravel\YaCommerce\Product\Model\Category;
-use Orq\Laravel\YaCommerce\Shop\Repository\ShopRepository;
+use Orq\Laravel\YaCommerce\Domain\Shop\Repository\ShopRepository;
 use Orq\Laravel\YaCommerce\Product\Repository\ProductRepository;
 use Orq\Laravel\YaCommerce\Product\Repository\CategoryRepository;
 use Orq\Laravel\YaCommerce\Product\Service\CategoryService;
