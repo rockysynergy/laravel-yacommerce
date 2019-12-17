@@ -13,13 +13,15 @@ abstract class OrmModel extends Model
 
     /**
      * @throws Orq\Laravel\YaCommerce\IllegalArgumentException
+     * @return Orq\Laravel\YaCommerce\Domain\OrmModel
      */
-    public function createNew(array $data):void
+    public function createNew(array $data)
     {
         try {
             $this->validate($data);
             $model = $this->makeInstance($data);
             $model->save();
+            return $model;
         } catch (IllegalArgumentException $e) {
             throw $e;
         }
@@ -90,13 +92,45 @@ abstract class OrmModel extends Model
 
     /**
      * make new instance
+     *
+     * @return OrmModel
      */
-    protected function makeInstance(array $data, OrmModel $instance = null)
+    public function makeInstance(array $data, OrmModel $instance = null)
     {
         $instance = is_null($instance) ? new static() : $instance;
         foreach ($data as $k => $v) {
             $instance->$k = $v;
         }
         return $instance;
+    }
+
+    /**
+     * Delete instance by id
+     *
+     * @param int $id
+     * @throws  Orq\Laravel\YaCommerce\IllegalArgumentException
+     */
+    public function deleteById(int $id):void
+    {
+        $m = new static();
+        $model = $m->find($id);
+        if (!$model) throw new IllegalArgumentException(trans("YaCommerce::message.no-record"), 1576480164);
+        $model->delete();
+    }
+
+    /**
+     * find instance by id
+     *
+     * @param int $id
+     *
+     * @throws Orq\Laravel\YaCommerce\IllegalArgumentException
+     * @return Orq\Laravel\YaCommerce\Domain\Product\Model\ormModel
+     */
+    public function findById(int $id)
+    {
+        $m = new static();
+        $model = $m->find($id);
+        if (!$model) throw new IllegalArgumentException(trans("YaCommerce::message.no-record"), 1576480181);
+        return $model;
     }
 }

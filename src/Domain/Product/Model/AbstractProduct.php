@@ -3,6 +3,7 @@
 namespace Orq\Laravel\YaCommerce\Domain\Product\Model;
 
 use Illuminate\Support\Facades\Log;
+use Orq\Laravel\YaCommerce\Domain\Compaign\Model\Seckill;
 use Orq\Laravel\YaCommerce\Domain\OrmModel;
 use Orq\Laravel\YaCommerce\IllegalArgumentException;
 
@@ -33,7 +34,7 @@ abstract class AbstractProduct extends OrmModel
     /**
      * parameter Accessor
      */
-    public function getParameterAttribute($value): array
+    public function getParametersAttribute($value): array
     {
         return json_decode($value, true);
     }
@@ -41,12 +42,12 @@ abstract class AbstractProduct extends OrmModel
     /**
      * parameter Mutator
      */
-    public function setParameterAttribute($value): void
+    public function setParametersAttribute($value): void
     {
         if (is_array($value)) {
-            $this->attributes['parameter'] = json_encode($value);
+            $this->attributes['parameters'] = json_encode($value);
         } else if (is_string($value)) {
-            $this->attributes['parameter'] = $value;
+            $this->attributes['parameters'] = $value;
         }
     }
 
@@ -65,6 +66,11 @@ abstract class AbstractProduct extends OrmModel
         $this->decrement('inventory', $num);
     }
 
+    /**
+     * Increase the inventory
+     *
+     * @throws Orq\Laravel\YaCommerce\IllegalArgumentException
+     */
     public function incInventory(int $num): void
     {
         if ($num < 1) {
@@ -74,4 +80,12 @@ abstract class AbstractProduct extends OrmModel
         $this->increment('inventory', $num);
     }
 
+
+    /**
+     * Get all of the Seckills that are associated with this product
+     */
+    public function seckills()
+    {
+        return $this->morphedByMany(Seckill::class, 'yac_campaign_product', 'product_id', 'campain_id');
+    }
 }

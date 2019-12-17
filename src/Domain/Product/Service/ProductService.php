@@ -1,7 +1,6 @@
 <?php
 namespace Orq\Laravel\YaCommerce\Domain\Product\Service;
 
-use Orq\DddBase\ModelFactory;
 use Illuminate\Support\Collection;
 use Orq\Laravel\YaCommerce\Domain\AbstractCrudService;
 use Orq\Laravel\YaCommerce\Domain\CrudInterface;

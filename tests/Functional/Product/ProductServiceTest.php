@@ -9,7 +9,7 @@ use Orq\Laravel\YaCommerce\Domain\Product\Service\ProductService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Orq\Laravel\YaCommerce\Domain\Product\Model\Product;
 
-class ProductServiceTest  extends DbTestCase
+class ProductServiceTest extends DbTestCase
 {
     use RefreshDatabase;
 
@@ -74,7 +74,43 @@ class ProductServiceTest  extends DbTestCase
      */
     public function getVariantById()
     {
-        $this->assertEquals('a', 'b');
+        $shop = [ 'id' => 3, 'name' => '积分商城'];
+        DB::table('yac_shops')->insert($shop);
+        $category = ['id'=> 4, 'title'=>'生活用品', 'shop_id'=>3];
+        DB::table('yac_categories')->insert($category);
+        $aParameters = ['color' => 'red', 'speed' => 45];
+        $pData = [
+            'id' => 2,
+            'title' => '电风扇',
+            'cover_pic' => '/storage/pics/fans.jpg',
+            'description' => '商品详情描述',
+            'price' => 5432,
+            'pictures' => 'pic_1.jpg, pic_2.jpg, pic_3.jpg',
+            'category_id' => $category['id'],
+            'inventory' => 0,
+            'status' => 1,
+            'parameters' => json_encode($aParameters),
+        ];
+        DB::table('yac_products')->insert($pData);
+        $productService = new ProductService('variant');
+        $bParameters = ['color' => 'green', 'height' => '35'];
+        $bpData = [
+            'id' => 22,
+            'parent_id' => 2,
+            'title' => '电风扇A',
+            'cover_pic' => '/storage/pics/fans.jpg',
+            'description' => '商品详情描述AA',
+            'price' => 5432,
+            'pictures' => 'pic_4.jpg',
+            'category_id' => $category['id'],
+            'inventory' => 10,
+            'status' => 1,
+            'parameters' => $bParameters,
+        ];
+        $productService->create($bpData);
+
+        $result = $productService->findById($bpData['id']);
+        $this->assertEquals(array_merge($aParameters, $bParameters), $result->parameters);
     }
 
     /**
@@ -154,4 +190,34 @@ class ProductServiceTest  extends DbTestCase
         $prod = Product::find($product['id']);
         $this->assertEquals(32, $prod->inventory);
     }
+
+    /**
+     * @test
+     */
+    public function ProductEloquentModelSetParameterMutator()
+    {
+        $shop = [ 'id' => 3, 'name' => '积分商城'];
+        DB::table('yac_shops')->insert($shop);
+        $category = ['id'=> 4, 'title'=>'生活用品', 'shop_id'=>3];
+        DB::table('yac_categories')->insert($category);
+        $parameters = ['color' => 'red', 'length' => '32cm'];
+        $product = [
+            'id' => 2,
+            'title' => '电风扇',
+            'cover_pic' => '/storage/pics/fans.jpg',
+            'description' => '商品详情描述',
+            'price' => 5432,
+            'pictures' => 'pic_1.jpg, pic_2.jpg, pic_3.jpg',
+            'category_id' => $category['id'],
+            'inventory' => 30,
+            'status' => 1,
+            'parameters' => $parameters,
+        ];
+        $productService = new ProductService('product');
+        $productService->create($product);
+
+        $pResult = DB::table('yac_products')->where('id', '=', 2)->first();
+        $this->assertEquals(json_encode($parameters), $pResult->parameters);
+    }
+
 }

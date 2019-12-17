@@ -5,7 +5,6 @@ use Illuminate\Support\Collection;
 use Orq\Laravel\YaCommerce\Domain\AbstractCrudService;
 use Orq\Laravel\YaCommerce\Domain\CrudInterface;
 use Orq\Laravel\YaCommerce\Domain\Product\Model\Category;
-use Orq\Laravel\YaCommerce\IllegalArgumentException;
 
 /**
  * The CategoryService.

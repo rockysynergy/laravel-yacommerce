@@ -36,9 +36,7 @@ abstract class AbstractCrudService implements CrudInterface
      */
     public function delete(int $id): void
     {
-        $ormModel = $this->ormModel::find($id);
-        if (!$ormModel) throw new IllegalArgumentException(trans("YaCommerce::message.no-record"), 1576480164);
-        $ormModel->delete();
+        $this->ormModel->deleteById($id);
     }
 
     /**
@@ -47,8 +45,6 @@ abstract class AbstractCrudService implements CrudInterface
      */
     public function findById(int $id)
     {
-        $ormModel = $this->ormModel::find($id);
-        if (!$ormModel) throw new IllegalArgumentException(trans("YaCommerce::message.no-record"), 1576480181);
-        return $ormModel;
+        return $this->ormModel->findById($id);
     }
 }
