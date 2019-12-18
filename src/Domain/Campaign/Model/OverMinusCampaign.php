@@ -3,10 +3,10 @@
 namespace Orq\Laravel\YaCommerce\Domain\Campaign\Model;
 
 
-class Seckill extends AbstractCampaign implements CampaignInterface
+class OverMinusCampaign extends AbstractCampaign implements CampaignInterface
 {
     protected $table = 'yac_campaigns';
-    protected $campaignType = 'seckill';
+    protected $campaignType = 'overMinus';
 
     /**
      * Determines whether the campaign has PricePolicy
@@ -15,6 +15,6 @@ class Seckill extends AbstractCampaign implements CampaignInterface
      */
     public function hasPricePolicy(): bool
     {
-        return false;
+        return is_null($this->pricePolicy);
     }
 }

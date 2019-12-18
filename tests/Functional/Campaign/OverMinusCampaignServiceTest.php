@@ -5,57 +5,45 @@ namespace Tests\YaCommerce\Functional\Campaign;
 use Tests\DbTestCase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Orq\Laravel\YaCommerce\Domain\Campaign\Model\OverMinusCampaign;
 use Orq\Laravel\YaCommerce\Domain\Campaign\Model\Seckill;
+use Orq\Laravel\YaCommerce\Domain\Campaign\Service\OverMinusCampaignService;
 use Orq\Laravel\YaCommerce\Domain\Campaign\Service\SeckillService;
 
-class SeckillServiceTest  extends DbTestCase
+class OverMinusCampaignServiceTest  extends DbTestCase
 {
     use RefreshDatabase;
 
     /**
      * @test
      */
-    public function createSeckillAttacheTheProduct()
+    public function createOverMinusCampaignAddThePricePolicy()
     {
-        $shop = ['id' => 3, 'name' => '积分商城'];
-        DB::table('yac_shops')->insert($shop);
-        $category = ['id' => 4, 'title' => '生活用品', 'shop_id' => 3];
-        DB::table('yac_categories')->insert($category);
-        $pData = [
-            'id' => 2,
-            'title' => '电风扇',
-            'cover_pic' => '/storage/pics/fans.jpg',
-            'description' => '商品详情描述',
-            'price' => 5432,
-            'pictures' => 'pic_1.jpg, pic_2.jpg, pic_3.jpg',
-            'category_id' => $category['id'],
-            'inventory' => 0,
-            'status' => 1,
+        $omParameters = [
+            'order_total' => 400,
+            'deduct_amound' => 40
         ];
-        DB::table('yac_products')->insert($pData);
-
         $skData = [
             'id' => 55,
             'start_time' => '2019-12-23 15:32:44',
             'end_time' => '2019-12-25 15:32:44',
-            'products' => [
-                [$pData['id'], 400]
+            'price_policy' => [
+                'type' => 'over_minus',
+                'parameters' => $omParameters
             ]
         ];
-        $seckillService = new SeckillService(resolve(Seckill::class));
-        $seckillService->create($skData);
+        $omCampaignService = new OverMinusCampaignService(resolve(OverMinusCampaign::class));
+        $omCampaignService->create($skData);
 
-        $result = Seckill::find($skData['id']);
-        $this->assertEquals('seckill', $result->campaign_type);
+        $omCampaign = OverMinusCampaign::find($skData['id']);
+        $this->assertEquals('overMinus', $omCampaign->campaign_type);
 
-        $result = $result->getProducts();
-        $this->assertEquals(1, $result->count());
-        $this->assertEquals(400, $result->get(0)->pivot->campaign_price);
-        $this->assertEquals($pData['title'], $result->get(0)->title);
+        $result = $omCampaign->getProducts();
+        $this->assertEquals(0, $result->count());
+        $this->assertEquals($omParameters['order_total'], $omCampaign->pricePolicy->parameters['order_total']);
     }
 
     /**
-     * @test
      */
     public function createSeckillWithNoProduct()
     {
@@ -81,18 +69,17 @@ class SeckillServiceTest  extends DbTestCase
             'start_time' => '2019-12-23 15:32:44',
             'end_time' => '2019-12-25 15:32:44',
         ];
-        $seckillService = new SeckillService(resolve(Seckill::class));
-        $seckillService->create($skData);
+        $omCampaignService = new SeckillService(resolve(Seckill::class));
+        $omCampaignService->create($skData);
 
         $result = Seckill::find($skData['id']);
-        $this->assertEquals('seckill', $result->campaign_type);
+        $this->assertEquals('overMinus', $result->campaign_type);
 
         $result = $result->getProducts();
         $this->assertEquals(0, $result->count());
     }
 
     /**
-     * @test
      */
     public function updateSeckillDeleteProduct()
     {
@@ -136,9 +123,9 @@ class SeckillServiceTest  extends DbTestCase
         ];
         DB::table('yac_campaign_product')->insert([$aCpData, $bCpData]);
 
-        $seckillService = new SeckillService(resolve(Seckill::class));
+        $omCampaignService = new SeckillService(resolve(Seckill::class));
         $bSkData = array_merge($skData, ['products' => [[$pData['id'], 30]]]);
-        $seckillService->update($bSkData);
+        $omCampaignService->update($bSkData);
 
         $seckill = Seckill::find($skData['id']);
         $products = $seckill->getProducts();
@@ -147,7 +134,6 @@ class SeckillServiceTest  extends DbTestCase
     }
 
     /**
-     * @test
      */
     public function updateSeckillAddProduct()
     {
@@ -191,14 +177,14 @@ class SeckillServiceTest  extends DbTestCase
         ];
         DB::table('yac_campaign_product')->insert([$aCpData]);
 
-        $seckillService = new SeckillService(resolve(Seckill::class));
+        $omCampaignService = new SeckillService(resolve(Seckill::class));
         $bSkData = array_merge($skData, [
             'products' => [
                 [$pData['id'], 30],
                 [$pbData['id'], 50],
             ]
         ]);
-        $seckillService->update($bSkData);
+        $omCampaignService->update($bSkData);
 
         $seckill = Seckill::find($skData['id']);
         $products = $seckill->getProducts();
@@ -208,7 +194,6 @@ class SeckillServiceTest  extends DbTestCase
     }
 
     /**
-     * @test
      */
     public function removesPivotTableRecordsUponDeletion()
     {
@@ -247,8 +232,8 @@ class SeckillServiceTest  extends DbTestCase
         ];
         DB::table('yac_campaign_product')->insert([$aCpData]);
 
-        $seckillService = new SeckillService(resolve(Seckill::class));
-        $seckillService->delete($skData['id']);
+        $omCampaignService = new SeckillService(resolve(Seckill::class));
+        $omCampaignService->delete($skData['id']);
 
         $this->assertEquals(0, DB::table('yac_campaign_product')->count());
     }

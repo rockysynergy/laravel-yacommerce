@@ -19,8 +19,7 @@ class CreateYacPricePoliciesTable extends Migration
             $table->string('type', 100)->comment('价格策略类型');
             $table->string('parameters', 500)->comment('价格策略参数');
 
-            $table->unsignedBigInteger('campaign_id')->comment('活动id');
-            $table->string('campaign_type')->comment('活动类型');
+            $table->unsignedBigInteger('campaign_id')->nullable()->comment('活动id');
             $table->timestamps();
             $table->softDeletes();
         });
