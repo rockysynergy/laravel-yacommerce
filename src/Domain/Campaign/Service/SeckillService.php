@@ -15,27 +15,28 @@ use Orq\Laravel\YaCommerce\Domain\Campaign\Model\Seckill;
  */
 class SeckillService extends AbstractCrudService implements CrudInterface
 {
+    protected $products = []; // Tackle the problem that annonymous function can not modify parent scope array for create function
+
     /**
      * @throws Orq\Laravel\YaCommerce\IllegalArgumentException
      */
     public function create(array $data): void
     {
-        $products = [];
-        if (isset($data['products'])) {
-            $products = $data['products'];
-            unset($data['products']);
-        }
-
-        $seckill = $this->ormModel->makeInstance($data);
-        foreach ($products as $cProd) {
-            if (count($cProd) == 1) {
-                $seckill->addProduct($cProd[0]);
-            } else {
-                $seckill->addProduct($cProd[0], $cProd[1]);
+        $this->ormModel->createNew($data, function ($aData) {
+            if (isset($aData['products'])) {
+                $this->products = $aData['products'];
+                unset($aData['products']);
             }
-        }
-
-        $seckill->save();
+            return $aData;
+        }, function ($seckill, $data) {
+            foreach ($this->products as $cProd) {
+                if (count($cProd) == 1) {
+                    $seckill->addProduct($cProd[0]);
+                } else {
+                    $seckill->addProduct($cProd[0], $cProd[1]);
+                }
+            }
+        });
     }
 
     /**
@@ -43,19 +44,15 @@ class SeckillService extends AbstractCrudService implements CrudInterface
      */
     public function update(array $data): void
     {
-        if (!isset($data['id'])) throw new IllegalArgumentException(trans("YaCommerce::message.update_no-id"), 1576635817);
-        try {
-            $this->ormModel->validate($data);
-            $products = [];
+        $this->ormModel->updateInstance($data, function($data) {
             if (isset($data['products'])) {
-                $products = $data['products'];
+                $this->products = $data['products'];
                 unset($data['products']);
             }
-            $seckill = Seckill::find($data['id']);
-            if (!$seckill) throw new IllegalArgumentException(trans("YaCommerce::message.no-record"), 1576635789);
-
+            return $data;
+        }, function ($seckill, $data) {
             $arr = [];
-            foreach ($products as $k => $cProd) {
+            foreach ($this->products as $k => $cProd) {
                 if (count($cProd) == 1) {
                     array_push($arr, $cProd[0]);
                 } else {
@@ -63,10 +60,7 @@ class SeckillService extends AbstractCrudService implements CrudInterface
                 }
             }
             $seckill->products()->sync($arr);
-            $seckill->save();
-        } catch (IllegalArgumentException $e) {
-            throw $e;
-        }
+        });
     }
 
     /**

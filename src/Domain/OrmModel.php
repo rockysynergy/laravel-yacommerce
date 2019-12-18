@@ -12,14 +12,20 @@ abstract class OrmModel extends Model
     use SoftDeletes;
 
     /**
+     *
+     * @param callable $preHook The function to be called before the instance is made
+     * @param callable $preHook The function to be called after the instance is made
+     *
      * @throws Orq\Laravel\YaCommerce\IllegalArgumentException
      * @return Orq\Laravel\YaCommerce\Domain\OrmModel
      */
-    public function createNew(array $data)
+    public function createNew(array $data, callable $preHook = null, callable $postHook = null)
     {
         try {
             $this->validate($data);
+            if (!is_null($preHook)) $data = $preHook($data);
             $model = $this->makeInstance($data);
+            if (!is_null($postHook)) $postHook($model, $data);
             $model->save();
             return $model;
         } catch (IllegalArgumentException $e) {
@@ -28,14 +34,20 @@ abstract class OrmModel extends Model
     }
 
     /**
+     * @param callable $preHook The function to be called before the instance is made
+     * @param callable $preHook The function to be called after the instance is made
+     *
+     * @return void
      * @throws Orq\Laravel\YaCommerce\IllegalArgumentException
      */
-    public function updateInstance(array $data):void
+    public function updateInstance(array $data, callable $preHook = null, callable $postHook = null):void
     {
         if (!isset($data['id'])) throw new IllegalArgumentException(trans("YaCommerce::message.update_no-id"), 1576220777);
         try {
             $this->validate($data);
+            if (!is_null($preHook)) $data = $preHook($data);
             $model = $this->makeInstance($data, static::find($data['id']));
+            if (!is_null($postHook)) $postHook($model, $data);
             $model->save();
         } catch (IllegalArgumentException $e) {
             throw $e;
