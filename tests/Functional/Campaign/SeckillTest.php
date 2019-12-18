@@ -39,8 +39,9 @@ class SeckillTest  extends DbTestCase
             'id' => 55,
             'start_time' => '2019-12-23 15:32:44',
             'end_time' => '2019-12-25 15:32:44',
+            'campaign_type' => 'seckill',
         ];
-        DB::table('yac_seckills')->insert($skData);
+        DB::table('yac_campaigns')->insert($skData);
         $seckill = Seckill::find($skData['id']);
         $seckill->addProduct($pData['id'], 400);
         $seckill->save();

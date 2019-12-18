@@ -110,11 +110,14 @@ abstract class OrmModel extends Model
      * @param int $id
      * @throws  Orq\Laravel\YaCommerce\IllegalArgumentException
      */
-    public function deleteById(int $id):void
+    public function deleteById(int $id, callable $hook = null):void
     {
         $m = new static();
         $model = $m->find($id);
         if (!$model) throw new IllegalArgumentException(trans("YaCommerce::message.no-record"), 1576480164);
+        if (!is_null($hook)) {
+            $hook($model);
+        }
         $model->delete();
     }
 

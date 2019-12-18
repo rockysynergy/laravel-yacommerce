@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateYacSeckillsTable extends Migration
+class CreateYacCampaignsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,8 +14,9 @@ class CreateYacSeckillsTable extends Migration
      */
     public function up()
     {
-        Schema::create('yac_seckills', function (Blueprint $table) {
+        Schema::create('yac_campaigns', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('campaign_type', 200)->comment('活动类型');
             $table->timestamp('start_time')->default(DB::raw('CURRENT_TIMESTAMP'))->comment('开始日期');
             $table->timestamp('end_time')->default(DB::raw('CURRENT_TIMESTAMP'))->comment('结束日期');
 
@@ -31,6 +32,6 @@ class CreateYacSeckillsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('yac_seckills');
+        Schema::dropIfExists('yac_campaigns');
     }
 }

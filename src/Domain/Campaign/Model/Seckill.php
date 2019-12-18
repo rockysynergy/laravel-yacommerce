@@ -8,7 +8,9 @@ class Seckill extends AbstractCampaign implements CampaignInterface
 {
     use AttachProductTrait;
 
-    protected $table = 'yac_seckills';
+    protected $table = 'yac_campaigns';
+    protected $campaignType = 'seckill';
+
 
     /**
      * The Products that belongs to the Seckill
@@ -18,6 +20,9 @@ class Seckill extends AbstractCampaign implements CampaignInterface
         return $this->morphToMany(Product::class, 'campaign', 'yac_campaign_product', 'campaign_id', 'product_id')->withPivot('campaign_price')->withTimestamps();
     }
 
+    /**
+     * Fetch the products for the campaign
+     */
     public function getProducts(): \Illuminate\Support\Collection
     {
         return $this->products;
@@ -36,6 +41,11 @@ class Seckill extends AbstractCampaign implements CampaignInterface
         return $now >= $ceTime;
     }
 
+    /**
+     * Determines whether the campaign has PricePolicy
+     *
+     * @return bool
+     */
     public function hasPricePolicy(): bool
     {
         return false;

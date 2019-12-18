@@ -17,8 +17,8 @@ class CreateYacCampaignProductTable extends Migration
         Schema::create('yac_campaign_product', function (Blueprint $table) {
             $table->unsignedBigInteger('product_id')->comment('产品id');
             $table->unsignedBigInteger('campaign_id')->comment('活动id');
-            $table->unsignedBigInteger('campaign_price')->nullable()->comment('活动价格');
 
+            $table->unsignedBigInteger('campaign_price')->nullable()->comment('活动价格');
             $table->string('campaign_type')->nullable()->comment('活动类型');
 
            $table->timestamps();
