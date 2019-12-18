@@ -11,7 +11,7 @@ use Orq\Laravel\YaCommerce\Domain\Campaign\Model\PricePolicy;
  *
  * Uses Eloquent model. It impletents a simplified Builder pattern
  */
-class AbstractCampaignService extends AbstractCrudService implements CrudInterface
+class CampaignService extends AbstractCrudService implements CrudInterface
 {
     /**
      * Tackle the problem that annonymous function can not modify parent scope array for create function

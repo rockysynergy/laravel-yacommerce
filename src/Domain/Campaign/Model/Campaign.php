@@ -5,9 +5,14 @@ namespace Orq\Laravel\YaCommerce\Domain\Campaign\Model;
 use Orq\Laravel\YaCommerce\Domain\OrmModel;
 use Orq\Laravel\YaCommerce\Domain\Product\Model\Product;
 
-abstract class AbstractCampaign extends OrmModel
+/**
+ * The `type` field is used to differentiate campaigns
+ */
+class Campaign extends OrmModel
 {
-        /**
+    protected $table = 'yac_campaigns';
+
+    /**
      * Get the related PricePolicy Record
      */
     public function pricePolicy()
@@ -16,7 +21,7 @@ abstract class AbstractCampaign extends OrmModel
     }
 
     /**
-     * The Products that belongs to the Seckill
+     * The Products that belongs to the Campaign
      */
     public function products()
     {
@@ -44,7 +49,7 @@ abstract class AbstractCampaign extends OrmModel
     }
 
     /**
-     * Determines whether the Seckill campaign is over
+     * Determines whether the Campaign campaign is over
      *
      * @return bool
      */
@@ -57,18 +62,6 @@ abstract class AbstractCampaign extends OrmModel
     }
 
     /**
-     * Add campaign type
-     *
-     * @return \Orq\Laravel\YaCommerce\Domain\OrmModel
-     */
-    public function makeInstance(array $data, ?\Orq\Laravel\YaCommerce\Domain\OrmModel $instance = null)
-    {
-        $instance = parent::makeInstance($data, $instance);
-        $instance->campaign_type = $this->campaignType;
-        return $instance;
-    }
-
-    /**
      * Make validation rules for the model
      */
     protected function makeRules(): array
@@ -76,6 +69,7 @@ abstract class AbstractCampaign extends OrmModel
         return [
             'start_time' => 'required|max:20',
             'end_time' => 'required|max:20',
+            'type' => 'required|max:200'
         ];
     }
 
