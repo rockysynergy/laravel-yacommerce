@@ -2,22 +2,96 @@
 
 namespace Orq\Laravel\YaCommerce\Domain\Campaign\Model;
 
+use Illuminate\Support\Collection;
 use Orq\Laravel\YaCommerce\Domain\OrmModel;
 use Orq\Laravel\YaCommerce\Domain\Product\Model\Product;
+use Orq\Laravel\YaCommerce\Domain\UserInterface;
 
 /**
  * The `type` field is used to differentiate campaigns
  */
-class Campaign extends OrmModel
+class Campaign extends OrmModel implements CampaignInterface, PricePolicyInterface
 {
     protected $table = 'yac_campaigns';
+
+    /**
+     * Make validation rules for the model
+     */
+    protected function makeRules(): array
+    {
+        return [
+            'start_time' => 'required|max:20',
+            'end_time' => 'required|max:20',
+            'title' => 'required|max:500'
+        ];
+    }
 
     /**
      * Get the related PricePolicy Record
      */
     public function pricePolicy()
     {
-        return $this->hasOne(PricePolicy::class, 'campaign_id');
+        return $this->hasOne(PricePolicy::class);
+    }
+
+    /**
+     * Calculate the price
+     *
+     * @param Orq\Laravel\YaCommerce\Domain\Order\Model\OrderInterface $order
+     * @return int
+     */
+    public function calculatePrice($order): int
+    {
+        return $this->pricePolicy->calculatePrice($order);
+    }
+
+    /**
+     * Get the related QualificationPolicy Record
+     */
+    public function qualificationPolicy()
+    {
+        return $this->hasOne(QualificationPolicy::class);
+    }
+
+    /**
+     * determine the qualification
+     *
+     * @param Orq\Laravel\YaCommerce\Domain\Order\Model\OrderInterface $order
+     * @return bool
+     */
+    public function isQualified($order): bool
+    {
+        return $this->qualificationPolicy->isQualified($this, $order);
+    }
+
+    /**
+     * Get the related participates
+     */
+    public function participates()
+    {
+        return $this->hasMany(Participate::class);
+    }
+
+    /**
+     * Count Participate for user
+     *
+     * @param Orq\Laravel\YaCommerce\Domain\UserInterface $user
+     * @return Illuminate\Support\Collection
+     */
+    public function getParticipates(UserInterface $user): Collection
+    {
+        return $this->participates()->where('user_id', '=', $user->getId())->get();
+    }
+
+    /**
+     * Add participate to campaign
+     */
+    public function addParticipate(array $participateData): void
+    {
+        $participateData['campaign_id'] = $this->id;
+        $pObj = new Participate();
+        $participate = $pObj->createNew($participateData);
+        $this->participates()->save($participate);
     }
 
     /**
@@ -59,18 +133,6 @@ class Campaign extends OrmModel
         $now = new \DateTime();
 
         return $now >= $ceTime;
-    }
-
-    /**
-     * Make validation rules for the model
-     */
-    protected function makeRules(): array
-    {
-        return [
-            'start_time' => 'required|max:20',
-            'end_time' => 'required|max:20',
-            'type' => 'required|max:200'
-        ];
     }
 
     /**

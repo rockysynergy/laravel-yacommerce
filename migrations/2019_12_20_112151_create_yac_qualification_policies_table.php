@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateYacPricePoliciesTable extends Migration
+class CreateYacQualificationPoliciesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,12 +14,12 @@ class CreateYacPricePoliciesTable extends Migration
      */
     public function up()
     {
-        Schema::create('yac_price_policies', function (Blueprint $table) {
+        Schema::create('yac_qualification_policies', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('strategy', 150)->comment('价格政策');
-            $table->string('parameters', 500)->comment('价格政策参数');
+            $table->string('strategy', 150)->comment('资格政策');
+            $table->string('parameters', 500)->comment('资格政策参数');
 
-            $table->unsignedBigInteger('campaign_id')->comment('活动id');
+            $table->unsignedBigInteger('campaign_id')->nullable()->comment('活动id');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -32,6 +32,6 @@ class CreateYacPricePoliciesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('yac_price_policies');
+        Schema::dropIfExists('yac_qualification_policies');
     }
 }

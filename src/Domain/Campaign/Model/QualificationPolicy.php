@@ -6,11 +6,15 @@ use Orq\Laravel\YaCommerce\Domain\OrmModel;
 use Orq\Laravel\YaCommerce\Domain\Order\Model\Order;
 use Orq\Laravel\YaCommerce\Domain\ParameterAttributeTrait;
 
-class PricePolicy extends OrmModel implements PricePolicyInterface
+class QualificationPolicy extends OrmModel implements QualificationPolicyInterface
 {
     use ParameterAttributeTrait;
 
-    protected $table = 'yac_price_policies';
+    protected $table = 'yac_qualification_policies';
+
+    /**
+     *
+     */
 
     /**
      * Make validation rules for the model
@@ -24,11 +28,12 @@ class PricePolicy extends OrmModel implements PricePolicyInterface
     }
 
     /**
-     * Calculate the price.
+     * Determine the qualification.
+     *
      */
-    public function calculatePrice($order):int
+    public function isQualified($campaign, $order):bool
     {
         $strategy = resolve($this->strategy);
-        return $strategy->calculate($this, $order);
+        return $strategy->isQualified($campaign, $this, $order);
     }
 }

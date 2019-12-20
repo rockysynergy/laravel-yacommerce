@@ -5,6 +5,7 @@ namespace Orq\Laravel\YaCommerce\Domain\Campaign\Service;
 use Orq\Laravel\YaCommerce\Domain\CrudInterface;
 use Orq\Laravel\YaCommerce\Domain\AbstractCrudService;
 use Orq\Laravel\YaCommerce\Domain\Campaign\Model\PricePolicy;
+use Orq\Laravel\YaCommerce\Domain\Campaign\Model\QualificationPolicy;
 
 /**
  * AbstractCampaignService
@@ -18,6 +19,7 @@ class CampaignService extends AbstractCrudService implements CrudInterface
      */
     protected $products = [];
     protected $price_policy = [];
+    protected $qualification_policy = [];
 
     /**
      * The anonymous function to Stash away the products data
@@ -29,7 +31,7 @@ class CampaignService extends AbstractCrudService implements CrudInterface
         parent::__construct($seckill);
 
         $this->purifyData = function ($aData) {
-            foreach (['products', 'price_policy'] as $field) {
+            foreach (['products', 'price_policy', 'qualification_policy'] as $field) {
                 if (isset($aData[$field])) {
                     $this->$field = $aData[$field];
                     unset($aData[$field]);
@@ -38,7 +40,6 @@ class CampaignService extends AbstractCrudService implements CrudInterface
             return $aData;
         };
     }
-
 
     /**
      * create seckill and its related products
@@ -60,8 +61,16 @@ class CampaignService extends AbstractCrudService implements CrudInterface
             // Add PricePolicy
             if (count($this->price_policy) > 0) {
                 $pricePolicy = resolve(PricePolicy::class);
+                $this->price_policy['campaign_id'] = $seckill->id;
                 $pricePolicy = $pricePolicy->createNew($this->price_policy);
                 $seckill->pricePolicy()->save($pricePolicy);
+            }
+
+            // Add QualificationPolicy
+            if (count($this->qualification_policy) > 0) {
+                $qualificationPolicy = resolve(QualificationPolicy::class);
+                $qualificationPolicy = $qualificationPolicy->createNew($this->qualification_policy);
+                $seckill->qualificationPolicy()->save($qualificationPolicy);
             }
         });
     }
@@ -87,8 +96,8 @@ class CampaignService extends AbstractCrudService implements CrudInterface
 
             // update PricePolicy
             if (count($this->price_policy) > 0) {
-                $name = ucfirst($this->price_policy['type']) . 'PricePolicy';
-                $pricePolicy = new $name();
+                $pricePolicy = resolve(PricePolicy::class);
+                $this->price_policy['campaign_id'] = $seckill->id;
                 $pricePolicy = $pricePolicy->updateInstance($this->price_policy);
                 $seckill->pricePolicy()->save($pricePolicy);
             }
@@ -103,5 +112,25 @@ class CampaignService extends AbstractCrudService implements CrudInterface
         $this->ormModel->deleteById($id, function ($seckill) {
             $seckill->products()->detach();
         });
+    }
+
+
+    /**
+     * Add participate to campaign
+     */
+    public function addParticipate(array $participateData): void
+    {
+        $this->ormModel->addParticipate($participateData);
+    }
+
+    /**
+     * Calculate the price
+     *
+     * @param Orq\Laravel\YaCommerce\Domain\Order\Model\OrderInterface $order
+     * @return int
+     */
+    public function calculatePrice($order): int
+    {
+        return $this->ormModel->calculatePrice($order);
     }
 }

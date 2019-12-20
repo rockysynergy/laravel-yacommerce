@@ -15,7 +15,7 @@ class CampaignServiceTest  extends DbTestCase
     /**
      * @test
      */
-    public function createCampaignAttacheTheProduct()
+    public function createCampaignWithProduct()
     {
         $shop = ['id' => 3, 'name' => '积分商城'];
         DB::table('yac_shops')->insert($shop);
@@ -36,7 +36,7 @@ class CampaignServiceTest  extends DbTestCase
 
         $skData = [
             'id' => 55,
-            'type' => 'seckill',
+            'title' => '年终大促',
             'start_time' => '2019-12-23 15:32:44',
             'end_time' => '2019-12-25 15:32:44',
             'products' => [
@@ -47,7 +47,7 @@ class CampaignServiceTest  extends DbTestCase
         $campaignService->create($skData);
 
         $result = Campaign::find($skData['id']);
-        $this->assertEquals('seckill', $result->type);
+        $this->assertEquals($skData['title'], $result->title);
 
         $result = $result->getProducts();
         $this->assertEquals(1, $result->count());
@@ -79,7 +79,7 @@ class CampaignServiceTest  extends DbTestCase
 
         $skData = [
             'id' => 55,
-            'type' => 'seckill',
+            'title' => 'seckill',
             'start_time' => '2019-12-23 15:32:44',
             'end_time' => '2019-12-25 15:32:44',
         ];
@@ -87,7 +87,7 @@ class CampaignServiceTest  extends DbTestCase
         $campaignService->create($skData);
 
         $result = Campaign::find($skData['id']);
-        $this->assertEquals('seckill', $result->type);
+        $this->assertEquals('seckill', $result->title);
 
         $result = $result->getProducts();
         $this->assertEquals(0, $result->count());
@@ -104,11 +104,11 @@ class CampaignServiceTest  extends DbTestCase
         ];
         $cData = [
             'id' => 55,
-            'type' => 'over_minus',
+            'title' => '年终大促，满300减100',
             'start_time' => '2019-12-23 15:32:44',
             'end_time' => '2019-12-25 15:32:44',
             'price_policy' => [
-                'type' => 'over_minus',
+                'strategy' => 'over_minus',
                 'parameters' => $omParameters
             ]
         ];
@@ -116,11 +116,40 @@ class CampaignServiceTest  extends DbTestCase
         $campaignService->create($cData);
 
         $omCampaign = Campaign::find($cData['id']);
-        $this->assertEquals($cData['type'], $omCampaign->type);
+        $this->assertEquals($cData['title'], $omCampaign->title);
 
         $result = $omCampaign->getProducts();
         $this->assertEquals(0, $result->count());
         $this->assertEquals($omParameters['order_total'], $omCampaign->pricePolicy->parameters['order_total']);
+    }
+
+     /**
+     * @test
+     */
+    public function createCampaignAddTheQualificationPolicy()
+    {
+        $omParameters = [
+            'participate_limits' => 400,
+        ];
+        $cData = [
+            'id' => 55,
+            'title' => '年终大促，满300减100',
+            'start_time' => '2019-12-23 15:32:44',
+            'end_time' => '2019-12-25 15:32:44',
+            'qualification_policy' => [
+                'strategy' => 'ParticipateCounts',
+                'parameters' => $omParameters
+            ]
+        ];
+        $campaignService = new CampaignService(resolve(Campaign::class));
+        $campaignService->create($cData);
+
+        $omCampaign = Campaign::find($cData['id']);
+        $this->assertEquals($cData['title'], $omCampaign->title);
+
+        $result = $omCampaign->getProducts();
+        $this->assertEquals(0, $result->count());
+        $this->assertEquals($omParameters['participate_limits'], $omCampaign->qualificationPolicy->parameters['participate_limits']);
     }
 
 
@@ -152,10 +181,9 @@ class CampaignServiceTest  extends DbTestCase
         DB::table('yac_products')->insert([$pData, $pbData]);
         $skData = [
             'id' => 55,
-            'type' => 'seckill',
             'start_time' => '2019-12-23 15:32:44',
             'end_time' => '2019-12-25 15:32:44',
-            'type' => 'seckill',
+            'title' => '年终大促',
         ];
         DB::table('yac_campaigns')->insert($skData);
         $aCpData = [
@@ -208,10 +236,9 @@ class CampaignServiceTest  extends DbTestCase
         DB::table('yac_products')->insert([$pData, $pbData]);
         $skData = [
             'id' => 55,
-            'type' => 'seckill',
             'start_time' => '2019-12-23 15:32:44',
             'end_time' => '2019-12-25 15:32:44',
-            'type' => 'seckill',
+            'title' => '年终大促',
         ];
         DB::table('yac_campaigns')->insert($skData);
         $aCpData = [
@@ -270,10 +297,9 @@ class CampaignServiceTest  extends DbTestCase
         DB::table('yac_products')->insert([$pData, $pbData]);
         $skData = [
             'id' => 55,
-            'type' => 'seckill',
             'start_time' => '2019-12-23 15:32:44',
             'end_time' => '2019-12-25 15:32:44',
-            'type' => 'seckill',
+            'title' => '年终大促',
         ];
         DB::table('yac_campaigns')->insert($skData);
         $aCpData = [
@@ -288,4 +314,5 @@ class CampaignServiceTest  extends DbTestCase
 
         $this->assertEquals(0, DB::table('yac_campaign_product')->count());
     }
+
 }

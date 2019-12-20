@@ -16,7 +16,7 @@ class CreateYacCampaignsTable extends Migration
     {
         Schema::create('yac_campaigns', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('type', 200)->comment('活动类型');
+            $table->string('title', 500)->comment('活动标题');
             $table->timestamp('start_time')->default(DB::raw('CURRENT_TIMESTAMP'))->comment('开始日期');
             $table->timestamp('end_time')->default(DB::raw('CURRENT_TIMESTAMP'))->comment('结束日期');
 

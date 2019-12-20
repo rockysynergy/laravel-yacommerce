@@ -8,6 +8,8 @@ interface PricePolicyInterface
 {
     /**
      * Calculate the price
+     *
+     * @param Orq\Laravel\YaCommerce\Domain\Order\Model\OrderInterface $order
      */
-    public function calculatePrice(Order $order):int;
+    public function calculatePrice($order):int;
 }
