@@ -1,0 +1,94 @@
+@startuml campaign-class
+Class OrderInfo <<Value Object>> {
+    -user: User
+    -products: array
+    +__construct(User user, Products products = [])
+    +user():User
+    +products():[]
+    +getTotal():int
+    +getParticipateCount():int
+}
+interface CampaignInterface {
+    +getStartTime(): DateTime
+    +getEndTime(): DateTime
+    +addProduct(Product $product):void
+    +calculatePrice(OrderInfo order):int
+    +isQualified(OrderInfo order):bool
+}
+interface PricePolicyInterface {
+    +calculatePrice(OrderInfo order):int
+}
+interface PriceStrategyInterface {
+    +calculate(OrderInfo order):int
+}
+interface QualificationPolicyInterface {
+    +isQualified(OrderInfo order):bool
+}
+interface QualificaitonStrategyInterface {
+    +isQualified(CampaignInterface $campaign OrderInfo order):bool
+}
+
+abstract OrmModel {
+    +createInstance():void
+    +updateInstance():void
+    +findById(int id):OrmModel
+    +delete(int id):void
+}
+
+class Campaign <<OrmModel>> {
+    +products():Collection
+}
+class PricePolicy <<OrmModel>> {
+    -strategy:string
+    -parameters: string
+}
+class OverMinusPriceStrategy
+class QualificationPolicy <<OrmModel>> {
+    -strategy:string
+    -parameters: string
+}
+class ParticipateCountQualificationStrategy
+class CampaignService {
+    +create(array data)
+    +update(array data)
+    +delete(int id)
+    +findById(int id)
+}
+
+
+PricePolicyInterface <|.. PricePolicy
+PriceStrategyInterface <|.. OverMinusPriceStrategy
+QualificationPolicyInterface <|.. QualificationPolicy
+QualificaitonStrategyInterface <|.. ParticipateCountQualificationStrategy
+CampaignInterface <|-- Campaign
+
+Campaign "1" o-- "0..1" PricePolicy : has
+Campaign "1" o-- "0..1" QualificationPolicy : has
+PricePolicy --> "1" PriceStrategyInterface
+QualificationPolicy --> "1" QualificaitonStrategyInterface
+CampaignService --> "1" Campaign : uses
+@enduml
+
+@startuml campaign-sequence-IsQualified
+actor User
+boundary CampaignService
+
+group Uses Strategy
+    User -> CampaignService: IsQualified(OrderInfo info)
+    CampaignService -> Campaign: Isqualified(OrderInfo info)
+    Campaign -> QulificationStrategyInterface: Isqualified(OrderInfo info)
+    QualificationStrategyInterface --> Campaign: True | False
+    Campaign --> CampaignService: True | False
+    CampaignService --> User: True | False
+    note over Campaign : The `Calculate` method shares the similiar sequence but call the `PricePolicyStrategy`
+end
+
+group Campaign CRUD
+    User -> CampaignService: create(array data)
+    note right: throws IllegalArgumentException upon validation failure
+    CampaignService -> Campaign: createInstance(array data)
+    note over CampaignService: `Update`, `Delete` and `FindById` shares the similar sequence
+end
+
+
+@enduml
