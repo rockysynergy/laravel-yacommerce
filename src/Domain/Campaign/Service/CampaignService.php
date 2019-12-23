@@ -8,7 +8,7 @@ use Orq\Laravel\YaCommerce\Domain\Campaign\Model\PricePolicy;
 use Orq\Laravel\YaCommerce\Domain\Campaign\Model\QualificationPolicy;
 
 /**
- * AbstractCampaignService
+ * CampaignService
  *
  * Uses Eloquent model. It impletents a simplified Builder pattern
  */
@@ -26,9 +26,9 @@ class CampaignService extends AbstractCrudService implements CrudInterface
      */
     protected $purifyData;
 
-    public function __construct($seckill)
+    public function __construct($campaign)
     {
-        parent::__construct($seckill);
+        parent::__construct($campaign);
 
         $this->purifyData = function ($aData) {
             foreach (['products', 'price_policy', 'qualification_policy'] as $field) {
@@ -42,47 +42,47 @@ class CampaignService extends AbstractCrudService implements CrudInterface
     }
 
     /**
-     * create seckill and its related products
+     * create campaign and its related products
      *
      * @throws Orq\Laravel\YaCommerce\IllegalArgumentException
      */
     public function create(array $data): void
     {
-        $this->ormModel->createNew($data, $this->purifyData, function ($seckill, $data) {
+        $this->ormModel->createNew($data, $this->purifyData, function ($campaign, $data) {
             // Add products
             foreach ($this->products as $cProd) {
                 if (count($cProd) == 1) {
-                    $seckill->addProduct($cProd[0]);
+                    $campaign->addProduct($cProd[0]);
                 } else {
-                    $seckill->addProduct($cProd[0], $cProd[1]);
+                    $campaign->addProduct($cProd[0], $cProd[1]);
                 }
             }
 
             // Add PricePolicy
             if (count($this->price_policy) > 0) {
                 $pricePolicy = resolve(PricePolicy::class);
-                $this->price_policy['campaign_id'] = $seckill->id;
+                $this->price_policy['campaign_id'] = $campaign->id;
                 $pricePolicy = $pricePolicy->createNew($this->price_policy);
-                $seckill->pricePolicy()->save($pricePolicy);
+                $campaign->pricePolicy()->save($pricePolicy);
             }
 
             // Add QualificationPolicy
             if (count($this->qualification_policy) > 0) {
                 $qualificationPolicy = resolve(QualificationPolicy::class);
                 $qualificationPolicy = $qualificationPolicy->createNew($this->qualification_policy);
-                $seckill->qualificationPolicy()->save($qualificationPolicy);
+                $campaign->qualificationPolicy()->save($qualificationPolicy);
             }
         });
     }
 
     /**
-     * create seckill and its related products
+     * create campaign and its related products
      *
      * @throws Orq\Laravel\YaCommerce\IllegalArgumentException
      */
     public function update(array $data): void
     {
-        $this->ormModel->updateInstance($data, $this->purifyData, function ($seckill, $data) {
+        $this->ormModel->updateInstance($data, $this->purifyData, function ($campaign, $data) {
             // Sync products
             $arr = [];
             foreach ($this->products as $k => $cProd) {
@@ -92,14 +92,14 @@ class CampaignService extends AbstractCrudService implements CrudInterface
                     $arr[$cProd[0]] = ['campaign_price' => $cProd[1]];
                 }
             }
-            $seckill->products()->sync($arr);
+            $campaign->products()->sync($arr);
 
             // update PricePolicy
             if (count($this->price_policy) > 0) {
                 $pricePolicy = resolve(PricePolicy::class);
-                $this->price_policy['campaign_id'] = $seckill->id;
+                $this->price_policy['campaign_id'] = $campaign->id;
                 $pricePolicy = $pricePolicy->updateInstance($this->price_policy);
-                $seckill->pricePolicy()->save($pricePolicy);
+                $campaign->pricePolicy()->save($pricePolicy);
             }
         });
     }
@@ -109,8 +109,8 @@ class CampaignService extends AbstractCrudService implements CrudInterface
      */
     public function delete(int $id): void
     {
-        $this->ormModel->deleteById($id, function ($seckill) {
-            $seckill->products()->detach();
+        $this->ormModel->deleteById($id, function ($campaign) {
+            $campaign->products()->detach();
         });
     }
 

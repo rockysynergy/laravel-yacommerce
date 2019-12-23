@@ -2,11 +2,11 @@
 
 namespace Orq\Laravel\YaCommerce\Domain\Order\Model;
 
+
 interface OrderInterface
 {
-
     /**
-     * @return Orq\Laravel\YaCommerce\Domain\UserInterface
+     * Generate OrederNumber
      */
-    public function getUser();
+    public function generateOrderNumber(string $prefix): string;
 }

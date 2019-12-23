@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -21,9 +22,11 @@ class CreateYacOrdersTable extends Migration
             $table->string('exorder_number',30)->nullable()->comment('外部订单号');
             $table->tinyInteger('pay_method')->comment('支付方式。1：微信支付；2：现金支付；3：支付宝支付.');
 
+            $table->timestamp('pay_time')->nullable()->comment('支付日期');
             $table->unsignedBigInteger('user_id')->comment('订单所属用户id');
-
+            $table->unsignedBigInteger('shop_id')->comment('店铺id');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

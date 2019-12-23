@@ -1,0 +1,78 @@
+@startuml Order-class
+Interface OrderServiceInterface {
+    +makeOrder(array info):void
+    +getMyOrders(int userId): Collection
+    +repalyOrder(int orderId):void
+    +addToCart(array info):void
+}
+
+
+abstract OrmModel {
+    +createInstance():void
+    +updateInstance():void
+    +findById(int id):OrmModel
+    +delete(int id):void
+}
+class Order <<OrmModel>> {
+    -order_number
+    -exorder_number
+    -pay_amount
+    -pay_status
+    -pay_method
+    -pay_time
+    -user_id
+    -shop_id
+    +shop(): Shop
+    +orderItems(): Collection
+}
+class OrderItem <<OrmModel>> {
+    -thumbnail
+    -title
+    -info
+    -amount
+    -unit_price
+    -pay_amount
+}
+class CartItem <<OrmModel>> {
+    -user_id
+    -shop_id
+    -product_id
+    -amount
+}
+
+OrderServiceInterface <|.. OrderService
+Order "1" o-- "many" OrderItem
+@enduml
+
+@startuml Order-sequence
+actor User
+boundary OrderService
+
+group make order
+    User -> OrderService: makeOrder(array  info)
+    note right : ['ship_address' => array | int, 'items' => array, 'shop_id' => int, 'user_id' => int]
+    group campaign checks qualification and calculate price
+        OrderService -> Campaign: isQualified(array info)
+        Campaign --> OrderService: True | False
+        OrderService -> Campaign: calculatePrice(array info)
+        Campaign --> OrderService: price: int
+    end
+    group order transaction
+        OrderService -> ProductService: deductInventory(array products)
+        OrderService -> Order: makeOrder(array  info)
+        note over Order : throws IllegalArtument Exception upon failure
+        OrderService -> PayService: makePayment(array payData)
+    end
+    OrderService -> PayService: Pay(Order order)
+end
+
+group get my orders
+    User -> OrderService: getMyOrders(array data)
+    OrderService --> User: Array orders
+end
+
+group repay order
+    User -> PayService: repay(int orderId)
+    PayService --> User: Array payload
+end
+@enduml

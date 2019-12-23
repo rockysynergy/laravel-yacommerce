@@ -27,6 +27,17 @@ class OrderServiceTest  extends DbTestCase
     /**
      * @test
      */
+    public function create()
+    {
+        $data = [
+            'user_id' => 333,
+            'shop_id' => 333,
+        ];
+        // Create method needs to calculate total and create orderItems
+    }
+
+    /**
+     */
     public function saveOrderThenGetInfoForWxPay()
     {
         $data = [
@@ -54,7 +65,6 @@ class OrderServiceTest  extends DbTestCase
     }
 
     /**
-     * @test
      */
     public function saveOrderDeductTheProductInventoryIfProductIdPresented()
     {
@@ -86,7 +96,6 @@ class OrderServiceTest  extends DbTestCase
     }
 
     /**
-     * @test
      */
     public function getOrdersForUser()
     {
@@ -125,7 +134,6 @@ class OrderServiceTest  extends DbTestCase
     }
 
     /**
-     * @test
      */
     public function makePrePaidOrderThrowsExceptionIfLeftCreditIsNotEnough()
     {
@@ -148,7 +156,6 @@ class OrderServiceTest  extends DbTestCase
     }
 
     /**
-     * @test
      */
     public function makePrePaidOrderSavesTheOrderInformation()
     {
@@ -174,7 +181,6 @@ class OrderServiceTest  extends DbTestCase
     }
 
     /**
-     * @test
      */
     public function saveOrderSavesTheShipaddressIfTheDataHasOne()
     {
