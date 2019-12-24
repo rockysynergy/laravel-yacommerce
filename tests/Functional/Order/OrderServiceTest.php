@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Orq\Laravel\YaCommerce\Domain\Order\PrepaidUserInterface;
 use Orq\Laravel\YaCommerce\Domain\Order\Service\OrderService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Orq\Laravel\YaCommerce\Domain\Order\Model\Order;
 use Tests\MakeStringTrait;
 
 class OrderServiceTest  extends DbTestCase
@@ -31,9 +32,63 @@ class OrderServiceTest  extends DbTestCase
     {
         $data = [
             'user_id' => 333,
-            'shop_id' => 333,
+            'shop_id' => 533,
+            'order_number_prefix' => 'SK',
+            'order_items'=> [[
+                'thumbnail'=>'https://wqb.fs007.com.cn/storage/images/mythumb.jpg',
+                'title'=>'会费',
+                'info'=>'2019-07-01至2019-10-31(3个月)会费',
+                'amount'=>1,
+                'pay_amount'=>388,
+                'unit_price'=>40,
+            ]],
         ];
         // Create method needs to calculate total and create orderItems
+        $orderService = new OrderService(new Order());
+        $orderService->create($data);
+        $this->assertDatabaseHas('yac_orders', ['user_id' => $data['user_id'], 'shop_id' => $data['shop_id']]);
+        $this->assertDatabaseHas('yac_orderitems', $data['order_items'][0]);
+    }
+
+    
+
+    /**
+     * @test
+     */
+    public function update()
+    {
+
+        $data = [
+            'id' => 989,
+            'user_id' => 333,
+            'shop_id' => 533,
+            'pay_status' => 1,
+            'pay_method' => 2,
+            'pay_amount' => 787,
+            'order_number' => 'SK201912092304331234',
+        ];
+        DB::table('yac_orders')->insert($data);
+        $item = [
+            'id' => 99,
+            'thumbnail'=>'https://wqb.fs007.com.cn/storage/images/mythumb.jpg',
+            'title'=>'会费',
+            'info'=>'2019-07-01至2019-10-31(3个月)会费',
+            'amount'=>1,
+            'pay_amount'=>388,
+            'unit_price'=>40,
+            'order_id' => $data['id'],
+        ];
+        DB::table('yac_orderitems')->insert($item);
+
+        $uData = $data;
+        $uData['pay_amount'] = 778;
+        $uItem = $item;
+        $uItem['pay_amount'] = 434;
+        $uData['order_items'] = [$uItem];
+        $orderService = new OrderService(new Order());
+        $orderService->update($uData);
+        $this->assertDatabaseHas('yac_orders', ['user_id' => $data['user_id'], 'pay_amount' => $uData['pay_amount']]);
+        $this->assertDatabaseHas('yac_orderitems', $uItem);
     }
 
     /**

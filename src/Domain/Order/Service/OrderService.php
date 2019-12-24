@@ -12,6 +12,7 @@ use Orq\Laravel\YaCommerce\Events\SavedOrder;
 use Orq\Laravel\YaCommerce\Domain\CrudInterface;
 use Orq\Laravel\YaCommerce\Domain\Order\Model\Order;
 use Orq\Laravel\YaCommerce\Domain\AbstractCrudService;
+use Orq\Laravel\YaCommerce\Domain\Order\Model\OrderItem;
 use Orq\Laravel\YaCommerce\Shipment\Model\ShipAddress;
 use Orq\Laravel\YaCommerce\Domain\Order\OrderException;
 use Orq\Laravel\YaCommerce\Product\Model\InventoryException;
@@ -20,6 +21,7 @@ use Orq\Laravel\YaCommerce\Product\Model\InvalidProductException;
 use Orq\Laravel\YaCommerce\Domain\Order\Repository\OrderRepository;
 use Orq\Laravel\YaCommerce\Shipment\Repository\ShipAddressRepository;
 use Orq\Laravel\YaCommerce\Domain\Order\Repository\CartItemRepository;
+use Orq\Laravel\YaCommerce\IllegalArgumentException;
 
 /**
  * CampaignService
@@ -33,6 +35,8 @@ class OrderService extends AbstractCrudService implements CrudInterface
      */
     protected $order_items = [];
 
+    protected $pay_amount = 0;
+
     /**
      * The anonymous function to Stash away the products data
      */
@@ -42,26 +46,25 @@ class OrderService extends AbstractCrudService implements CrudInterface
     {
         parent::__construct($order);
 
+        // Stash away the `order_items`, calculate `pay_amount` and generate `order_number`, to make data ready to be created as Order
         $this->purifyData = function ($aData) {
-            $payTotal = 0;
             foreach (['order_items'] as $field) {
                 if (isset($aData[$field])) {
-                    array_walk($aData['$field'], function($item, $k, &$total) {
-                        $total += $item['pay_amount'];
-                    }, $payTotal);
                     $this->$field = $aData[$field];
                     unset($aData[$field]);
                 }
             }
 
-            $aData['pay_amount'] = $payTotal;
-            $aData['order_number'] = $this->ormModel->generateOrderNumber($aData['order_number_prefix']);
+            $aData['pay_amount'] = $this->pay_amount;
+            if (!isset($aData['order_number'])) {
+                $aData['order_number'] = $this->ormModel->generateOrderNumber($aData['order_number_prefix']);
+            }
             return $aData;
         };
     }
 
     /**
-     * create campaign and its related products
+     * create order and its related orderItems
      *
      * @throws Orq\Laravel\YaCommerce\IllegalArgumentException
      */
@@ -74,6 +77,102 @@ class OrderService extends AbstractCrudService implements CrudInterface
             }
             $order->setDescription($this->order_items);
         });
+    }
+
+
+    /**
+     * create order and its related orderItems
+     *
+     * @throws Orq\Laravel\YaCommerce\IllegalArgumentException
+     */
+    public function update(array $data): void
+    {
+        if (isset($data['order_items'])) $this->totalizePayAmount($data);
+        $this->ormModel->updateInstance($data, $this->purifyData);
+        if (count($this->order_items) > 0) {
+            $orderItem = new OrderItem();
+            foreach ($this->order_items as $item) {
+                $orderItem->updateInstance($item);
+            }
+        }
+    }
+
+    /**
+     * Calculate order total
+     *
+     * @param array $data
+     * @return void
+     */
+    protected function totalizePayAmount($data)
+    {
+        if (isset($data['pay_amount'])) {
+            $this->pay_amount = $data['pay_amount'];
+        } else {
+            $total = 0;
+            foreach ($data['order_items'] as $item) {
+                $total += $item['pay_amount'];
+            }
+            $this->pay_amount = $total;
+        }
+    }
+
+    /**
+     * @param array $data
+     * @return void
+     */
+    public function makeOrder(array $data)
+    {
+        $this->totalizePayAmount($data);
+        if (isset($data['type']) && $data['type'] == 'prepay') {
+            $this->makePrepaidOrder($data);
+        } else {
+            $this->makeShopOrder($data);
+        }
+    }
+
+
+    /**
+     * make prepaid order
+     */
+    public function makePrepaidOrder(array $data): void
+    {
+        if (!isset($data['user_id'])) {
+            throw new IllegalArgumentException(trans("YaCommerce::message.no-id"), 1565588142);
+        }
+        $user = resolve(PrepaidUserInterface::class, ['id' => $data['user_id']]);
+        $total = self::totalizePayAmount($data) / 100;
+        if ($total > $user->getLeftCredit()) {
+            throw new IllegalArgumentException(trans("YaCommerce::message.no-enough-credit"), 1565581699);
+        }
+
+        $this->create($data);
+        $user->deductCredit($total);
+    }
+
+
+    /**
+     * make shop order
+     */
+    public static function makeShopOrder(array $data): array
+    {
+        $openid = (AppUser::find($data['app_user_id']))->wxopenid;
+
+        $id = OrderService::saveOrder($data, 'SP');
+        self::deleteCartItems($data['items']);
+        $info = OrderService::getInfoForWxPayUnifiedOrder($id, $openid);
+
+        $prepayId = WxPay::makeUnifiedOrder($info);
+        $payload = WxPay::assemblePayload($prepayId);
+
+        return $payload;
+    }
+
+    /**
+     * 获取用户在指定应用或商店的所有订单
+     */
+    public static function findAllForUser(int $userId, string $ptype, int $pid): array
+    {
+        return OrderRepository::findAllForUser($userId, $ptype, $pid);
     }
 
     /**
@@ -133,55 +232,6 @@ class OrderService extends AbstractCrudService implements CrudInterface
         return ['body' => $order->getDescription(), 'out_trade_no' => $order->getOrderNumber(), 'total_fee' => $order->getPayAmount(), 'openid' => $openid];
     }
 
-    // 类似于积分兑换的订单
-    public static function makePrepaidOrder(array $data, PrepaidUserInterface $user): void
-    {
-        if (!$user instanceof PrepaidUserInterface) {
-            throw new \Exception('请提供实现了PrepaidUserInterface的用户实例！', 1565588142);
-        }
-        $total = self::totalizePayAmount($data) / 100;
-        if ($total > $user->getLeftCredit()) {
-            throw new DomainException('余额（积分）不足！', 1565581699);
-        }
-
-        self::saveOrder($data, 'JF');
-        $user->deductCredit($total);
-    }
-
-    // 计算订单总额
-    protected static function totalizePayAmount($data)
-    {
-        $total = 0;
-        foreach ($data['items'] as $item) {
-            $total += $item['pay_amount'];
-        }
-        return $total;
-    }
-
-    /**
-     * 获取用户在指定应用或商店的所有订单
-     */
-    public static function findAllForUser(int $userId, string $ptype, int $pid): array
-    {
-        return OrderRepository::findAllForUser($userId, $ptype, $pid);
-    }
-
-    /**
-     * 创建订单、删除购物车
-     */
-    public static function makeShopOrder(array $data): array
-    {
-        $openid = (AppUser::find($data['app_user_id']))->wxopenid;
-
-        $id = OrderService::saveOrder($data, 'SP');
-        self::deleteCartItems($data['items']);
-        $info = OrderService::getInfoForWxPayUnifiedOrder($id, $openid);
-
-        $prepayId = WxPay::makeUnifiedOrder($info);
-        $payload = WxPay::assemblePayload($prepayId);
-
-        return $payload;
-    }
 
     /**
      * 删除购物车记录

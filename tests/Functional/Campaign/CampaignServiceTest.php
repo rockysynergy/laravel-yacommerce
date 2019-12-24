@@ -35,7 +35,6 @@ class CampaignServiceTest  extends DbTestCase
         DB::table('yac_products')->insert($pData);
 
         $skData = [
-            'id' => 55,
             'title' => '年终大促',
             'start_time' => '2019-12-23 15:32:44',
             'end_time' => '2019-12-25 15:32:44',
@@ -46,7 +45,7 @@ class CampaignServiceTest  extends DbTestCase
         $campaignService = new CampaignService(resolve(Campaign::class));
         $campaignService->create($skData);
 
-        $result = Campaign::find($skData['id']);
+        $result = Campaign::first();
         $this->assertEquals($skData['title'], $result->title);
 
         $result = $result->getProducts();
@@ -78,7 +77,6 @@ class CampaignServiceTest  extends DbTestCase
         DB::table('yac_products')->insert($pData);
 
         $skData = [
-            'id' => 55,
             'title' => 'seckill',
             'start_time' => '2019-12-23 15:32:44',
             'end_time' => '2019-12-25 15:32:44',
@@ -86,7 +84,7 @@ class CampaignServiceTest  extends DbTestCase
         $campaignService = new CampaignService(resolve(Campaign::class));
         $campaignService->create($skData);
 
-        $result = Campaign::find($skData['id']);
+        $result = Campaign::first();
         $this->assertEquals('seckill', $result->title);
 
         $result = $result->getProducts();
@@ -103,7 +101,6 @@ class CampaignServiceTest  extends DbTestCase
             'deduct_amound' => 40
         ];
         $cData = [
-            'id' => 55,
             'title' => '年终大促，满300减100',
             'start_time' => '2019-12-23 15:32:44',
             'end_time' => '2019-12-25 15:32:44',
@@ -115,7 +112,7 @@ class CampaignServiceTest  extends DbTestCase
         $campaignService = new CampaignService(resolve(Campaign::class));
         $campaignService->create($cData);
 
-        $omCampaign = Campaign::find($cData['id']);
+        $omCampaign = Campaign::first();
         $this->assertEquals($cData['title'], $omCampaign->title);
 
         $result = $omCampaign->getProducts();
@@ -132,7 +129,6 @@ class CampaignServiceTest  extends DbTestCase
             'participate_limits' => 400,
         ];
         $cData = [
-            'id' => 55,
             'title' => '年终大促，满300减100',
             'start_time' => '2019-12-23 15:32:44',
             'end_time' => '2019-12-25 15:32:44',
@@ -144,7 +140,7 @@ class CampaignServiceTest  extends DbTestCase
         $campaignService = new CampaignService(resolve(Campaign::class));
         $campaignService->create($cData);
 
-        $omCampaign = Campaign::find($cData['id']);
+        $omCampaign = Campaign::first();
         $this->assertEquals($cData['title'], $omCampaign->title);
 
         $result = $omCampaign->getProducts();

@@ -8,6 +8,7 @@ class Order extends OrmModel implements OrderInterface
 {
 
     protected $table = 'yac_orders';
+    protected $guarded = ['order_number_prefix'];
 
     /**
      * Set the default value
@@ -80,7 +81,7 @@ class Order extends OrmModel implements OrderInterface
      */
     public function addItem(array $data)
     {
-        $data['order_id'] = $this->id;
+        $data['order_id'] = $this->id ;
         $pObj = new OrderItem();
         $orderItem = $pObj->createNew($data);
         $this->orderItems()->save($orderItem);

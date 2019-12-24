@@ -25,8 +25,8 @@ abstract class OrmModel extends Model
             $this->validate($data);
             if (!is_null($preHook)) $data = $preHook($data);
             $model = $this->makeInstance($data);
-            if (!is_null($postHook)) $postHook($model, $data);
             $model->save();
+            if (!is_null($postHook)) $postHook($model, $data);
             return $model;
         } catch (IllegalArgumentException $e) {
             throw $e;
@@ -111,7 +111,9 @@ abstract class OrmModel extends Model
     {
         $instance = is_null($instance) ? new static() : $instance;
         foreach ($data as $k => $v) {
-            $instance->$k = $v;
+            if (!in_array($k, $this->guarded)) {
+                $instance->$k = $v;
+            }
         }
         return $instance;
     }

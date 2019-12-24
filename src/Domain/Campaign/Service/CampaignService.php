@@ -101,6 +101,13 @@ class CampaignService extends AbstractCrudService implements CrudInterface
                 $pricePolicy = $pricePolicy->updateInstance($this->price_policy);
                 $campaign->pricePolicy()->save($pricePolicy);
             }
+
+            // Add QualificationPolicy
+            if (count($this->qualification_policy) > 0) {
+                $qualificationPolicy = resolve(QualificationPolicy::class);
+                $qualificationPolicy = $qualificationPolicy->updateInstance($this->qualification_policy);
+                $campaign->qualificationPolicy()->save($qualificationPolicy);
+            }
         });
     }
 
