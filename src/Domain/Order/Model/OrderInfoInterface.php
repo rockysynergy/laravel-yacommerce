@@ -10,9 +10,8 @@ interface OrderInfoInterface
     /**
      * get the User
      *
-     * @return Orq\Laravel\YaCommerce\Domain\UserInterface
-     */
-    public function getUser();
+     * @return int
+    public function getUserId();
 
     /**
      * Calculate the total

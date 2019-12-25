@@ -86,19 +86,4 @@ class Order extends OrmModel implements OrderInterface
         $orderItem = $pObj->createNew($data);
         $this->orderItems()->save($orderItem);
     }
-
-    /**
-     * derive and set description from orderItems
-     */
-    public function setDescription(array $items = []): void
-    {
-        if (count($items) > 0) {
-            $d = $items[0]['title'];
-            if (count($items) > 1) {
-                $d .= '等';
-            }
-
-            $this->description = $d;
-        }
-    }
 }

@@ -21,7 +21,7 @@ class ParticipateCountQualificationStrategy implements QualificationStrategyInte
      */
     public function isQualified($campaign, $policy, $order): bool
     {
-        $participates = $campaign->getParticipates($order->getUser())->count();
+        $participates = $campaign->getParticipates($order->getUserId())->count();
         return $participates < $policy->parameters['participate_limits'];
     }
 }

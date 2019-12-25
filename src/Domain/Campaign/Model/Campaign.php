@@ -3,6 +3,7 @@
 namespace Orq\Laravel\YaCommerce\Domain\Campaign\Model;
 
 use Illuminate\Support\Collection;
+use Orq\DddBase\IllegalArgumentException;
 use Orq\Laravel\YaCommerce\Domain\OrmModel;
 use Orq\Laravel\YaCommerce\Domain\Product\Model\Product;
 use Orq\Laravel\YaCommerce\Domain\UserInterface;
@@ -10,7 +11,7 @@ use Orq\Laravel\YaCommerce\Domain\UserInterface;
 /**
  * The `type` field is used to differentiate campaigns
  */
-class Campaign extends OrmModel implements CampaignInterface, PricePolicyInterface
+class Campaign extends OrmModel implements CampaignInterface, PricePolicyInterface, QualificationPolicyInterface, CampaignRepositoryInterface
 {
     protected $table = 'yac_campaigns';
 
@@ -153,5 +154,16 @@ class Campaign extends OrmModel implements CampaignInterface, PricePolicyInterfa
     public function getEndTime(): \DateTime
     {
         return new \DateTime($this->end_time);
+    }
+
+    /**
+     * Find the campaign by id
+     *
+     * @return this
+     */
+    public function findById(int $id)
+    {
+        $c = self::find($id);
+        if (!$c) throw new IllegalArgumentException(trans("YaCommerce::message.cannot-find-campaign"), 1577244877);
     }
 }

@@ -7,18 +7,20 @@ use Orq\Laravel\YaCommerce\IllegalArgumentException;
 
 class OrderInfo implements OrderInfoInterface
 {
-    protected $user;
+    protected $userId;
     protected $orderItems;
     protected $payTotal = 0;
+    protected $description = '';
 
     /**
      * Construct the OrderInfo Object
      */
-    public function __construct(array $data, UserInterface $user)
+    public function __construct(array $data)
     {
-        $this->user = $user;
+        $this->userId = $data['user_id'];
         $this->calculatePayTotal($data);
         $this->orderItems = isset($data['order_items']) ? $data['order_items'] : [];
+        $this->deriveDescription($data);
     }
 
     /**
@@ -38,11 +40,30 @@ class OrderInfo implements OrderInfoInterface
     }
 
     /**
-     * @return Orq\Laravel\YaCommerce\Domain\UserInterface
+     * generate Description
      */
-    public function getUser()
+    protected function deriveDescription($data)
     {
-        return $this->user;
+        if (isset($data['description'])) {
+            $this->description = $data['description'];
+        } else {
+            if (count($this->orderItems) > 0) {
+                $d = $this->orderItems[0]['title'];
+                if (count($this->orderItems) > 1) {
+                    $d .= '等';
+                }
+
+                $this->description = $d;
+            }
+        }
+    }
+
+    /**
+     * @return int
+     */
+    public function getUserId()
+    {
+        return $this->userId;
     }
 
     /**
@@ -59,5 +80,26 @@ class OrderInfo implements OrderInfoInterface
     public function getPayTotal()
     {
         return $this->payTotal;
+    }
+
+    /**
+     * Update the payTotal and return a new instance
+     */
+    public function updatePayTotal($payTotal)
+    {
+        return new self([
+            'pay_amount' => $payTotal,
+            'description' => $this->description,
+            'order_items' => $this->orderItems,
+            'user_id' => $this->userId,
+        ]);
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
     }
 }
