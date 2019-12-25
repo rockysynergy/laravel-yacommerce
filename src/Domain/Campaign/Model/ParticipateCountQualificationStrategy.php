@@ -16,7 +16,7 @@ class ParticipateCountQualificationStrategy implements QualificationStrategyInte
      *
      * @param Orq\Laravel\YaCommerce\Domain\Campaign\Model\CampaignInterface $campaign
      * @param Orq\Laravel\YaCommerce\Domain\Campaign\Model\QualificationPolicyInterface $pricePolicy
-     * @param Orq\Laravel\YaCommerce\Domain\Order\Model\OrderInterface $order
+     * @param Orq\Laravel\YaCommerce\Domain\Order\Model\OrderInfoInterface $order
      * @return int
      */
     public function isQualified($campaign, $policy, $order): bool

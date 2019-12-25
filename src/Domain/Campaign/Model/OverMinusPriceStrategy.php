@@ -17,12 +17,12 @@ class OverMinusPriceStrategy implements PriceStrategyInterface
      * Calculate the price
      *
      * @param Orq\Laravel\YaCommerce\Domain\Campaign\Model\PricePolicyInterface $pricePolicy
-     * @param Orq\Laravel\YaCommerce\Domain\Order\Model\Order $order
+     * @param Orq\Laravel\YaCommerce\Domain\Order\Model\OrderInfoInterface $order
      * @return int
      */
     public function calculate($policy, $order):int
     {
-        $orderTotal = $order->getTotal();
+        $orderTotal = $order->getPayTotal();
         if ($orderTotal >= $policy->parameters['order_total']) {
             if (isset($policy->parameters['deduct_amount'])) $orderTotal -= $policy->parameters['deduct_amount'];
             if (isset($policy->parameters['discount_rate'])) $orderTotal -= $orderTotal * $policy->parameters['discount_rate'] / 100;

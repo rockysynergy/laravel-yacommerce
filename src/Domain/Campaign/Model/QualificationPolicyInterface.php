@@ -10,7 +10,7 @@ interface QualificationPolicyInterface
      * determine the qualification
      *
      * @param Orq\Laravel\YaCommerce\Domain\Campaign\Model\CampaignInterface $campaign
-     * @param Orq\Laravel\YaCommerce\Domain\Order\Model\OrderInterface $order
+     * @param Orq\Laravel\YaCommerce\Domain\Order\Model\OrderInfoInterface $order
      * @return bool
      */
     public function isQualified($campaign, $order):bool;

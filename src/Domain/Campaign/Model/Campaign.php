@@ -37,7 +37,7 @@ class Campaign extends OrmModel implements CampaignInterface, PricePolicyInterfa
     /**
      * Calculate the price
      *
-     * @param Orq\Laravel\YaCommerce\Domain\Order\Model\OrderInterface $order
+     * @param Orq\Laravel\YaCommerce\Domain\Order\Model\OrderInfoInterface $order
      * @return int
      */
     public function calculatePrice($order): int
@@ -56,7 +56,7 @@ class Campaign extends OrmModel implements CampaignInterface, PricePolicyInterfa
     /**
      * determine the qualification
      *
-     * @param Orq\Laravel\YaCommerce\Domain\Order\Model\OrderInterface $order
+     * @param Orq\Laravel\YaCommerce\Domain\Order\Model\OrderInfoInterface $order
      * @return bool
      */
     public function isQualified($order): bool

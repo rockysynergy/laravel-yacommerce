@@ -133,7 +133,7 @@ class CampaignService extends AbstractCrudService implements CrudInterface
     /**
      * Calculate the price
      *
-     * @param Orq\Laravel\YaCommerce\Domain\Order\Model\OrderInterface $order
+     * @param Orq\Laravel\YaCommerce\Domain\Order\Model\OrderInfoInterface $order
      * @return int
      */
     public function calculatePrice($order): int

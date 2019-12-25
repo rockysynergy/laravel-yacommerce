@@ -49,7 +49,7 @@ interface CampaignInterface
     /**
      * Calculate the price
      *
-     * @param Orq\Laravel\YaCommerce\Domain\Order\Model\OrderInterface $order
+     * @param Orq\Laravel\YaCommerce\Domain\Order\Model\OrderInfoInterface $order
      * @return int
      */
     public function calculatePrice($order): int;
@@ -57,7 +57,7 @@ interface CampaignInterface
     /**
      * determine the qualification
      *
-     * @param Orq\Laravel\YaCommerce\Domain\Order\Model\OrderInterface $order
+     * @param Orq\Laravel\YaCommerce\Domain\Order\Model\OrderInfoInterface $order
      * @return bool
      */
     public function isQualified($order): bool;

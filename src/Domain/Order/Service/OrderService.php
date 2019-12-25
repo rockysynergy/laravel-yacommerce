@@ -11,17 +11,18 @@ use Orq\Laravel\YaCommerce\Payment\WxPay;
 use Orq\Laravel\YaCommerce\Events\SavedOrder;
 use Orq\Laravel\YaCommerce\Domain\CrudInterface;
 use Orq\Laravel\YaCommerce\Domain\Order\Model\Order;
+use Orq\Laravel\YaCommerce\IllegalArgumentException;
 use Orq\Laravel\YaCommerce\Domain\AbstractCrudService;
-use Orq\Laravel\YaCommerce\Domain\Order\Model\OrderItem;
 use Orq\Laravel\YaCommerce\Shipment\Model\ShipAddress;
 use Orq\Laravel\YaCommerce\Domain\Order\OrderException;
+use Orq\Laravel\YaCommerce\Domain\Order\Model\OrderItem;
+use Orq\Laravel\YaCommerce\Domain\Campaign\Model\Campaign;
 use Orq\Laravel\YaCommerce\Product\Model\InventoryException;
 use Orq\Laravel\YaCommerce\Domain\Order\PrepaidUserInterface;
 use Orq\Laravel\YaCommerce\Product\Model\InvalidProductException;
 use Orq\Laravel\YaCommerce\Domain\Order\Repository\OrderRepository;
 use Orq\Laravel\YaCommerce\Shipment\Repository\ShipAddressRepository;
 use Orq\Laravel\YaCommerce\Domain\Order\Repository\CartItemRepository;
-use Orq\Laravel\YaCommerce\IllegalArgumentException;
 
 /**
  * CampaignService
@@ -122,11 +123,24 @@ class OrderService extends AbstractCrudService implements CrudInterface
      */
     public function makeOrder(array $data)
     {
+        $this->checkQualification($data);
         $this->totalizePayAmount($data);
         if (isset($data['type']) && $data['type'] == 'prepay') {
             $this->makePrepaidOrder($data);
         } else {
             $this->makeShopOrder($data);
+        }
+    }
+
+    /**
+     * @param array $data
+     * @return bool
+     *  @throws Orq\Laravel\YaCommerce\IllegalArgumentException
+     */
+    protected function checkQualification(array $data)
+    {
+        if (isset($data['campaign_id'])) {
+            $campaign = Campaign::find($data['campaign_id']);
         }
     }
 
