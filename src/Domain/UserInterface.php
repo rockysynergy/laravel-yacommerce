@@ -4,5 +4,9 @@ namespace Orq\Laravel\YaCommerce\Domain;
 
 interface UserInterface
 {
-    public function getId() :int;
+    /**
+     * @param int $userId
+     * @return string
+     */
+    public function getWxOpenId():string;
 }

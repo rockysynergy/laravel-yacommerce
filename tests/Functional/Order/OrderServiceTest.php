@@ -4,18 +4,24 @@ namespace Tests\YaCommerce\Functional\Order\Repository;
 
 
 use Tests\DbTestCase;
+use Tests\MakeStringTrait;
 use Orq\DddBase\ModelFactory;
 use Illuminate\Support\Facades\DB;
-use Orq\Laravel\YaCommerce\Domain\Order\PrepaidUserInterface;
-use Orq\Laravel\YaCommerce\Domain\Order\Service\OrderService;
+use Illuminate\Support\Facades\App;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Orq\Laravel\YaCommerce\Domain\Order\Model\Order;
-use Tests\MakeStringTrait;
+use Orq\Laravel\YaCommerce\Domain\Order\PrepaidUserInterface;
+use Orq\Laravel\YaCommerce\Domain\Order\Service\OrderService;
 
 class OrderServiceTest  extends DbTestCase
 {
     use RefreshDatabase;
     use MakeStringTrait;
+
+    protected function getPackageProviders($app)
+    {
+        return ['Orq\Laravel\YaCommerce\YaCommerceServiceProvider'];
+    }
 
     protected function getEnvironmentSetUp($app)
     {
@@ -30,10 +36,12 @@ class OrderServiceTest  extends DbTestCase
      */
     public function create()
     {
+        App::setlocale('zh_CN');
         $data = [
             'user_id' => 333,
             'shop_id' => 533,
-            'order_number_prefix' => 'SK',
+            // 'order_number_prefix' => 'SK',
+            'order_number' => 'SK201912230923453213',
             'order_items'=> [[
                 'thumbnail'=>'https://wqb.fs007.com.cn/storage/images/mythumb.jpg',
                 'title'=>'会费',
@@ -41,16 +49,18 @@ class OrderServiceTest  extends DbTestCase
                 'amount'=>1,
                 'pay_amount'=>388,
                 'unit_price'=>40,
+                'product_id' => 987,
             ]],
         ];
         // Create method needs to calculate total and create orderItems
         $orderService = new OrderService(new Order());
         $orderService->create($data);
         $this->assertDatabaseHas('yac_orders', ['user_id' => $data['user_id'], 'shop_id' => $data['shop_id']]);
-        $this->assertDatabaseHas('yac_orderitems', $data['order_items'][0]);
+        $orderItem = $data['order_items'][0];
+        $this->assertDatabaseHas('yac_orderitems', ['title' => $orderItem['title'], 'pay_amount' => $orderItem['pay_amount']]);
     }
 
-    
+
 
     /**
      * @test

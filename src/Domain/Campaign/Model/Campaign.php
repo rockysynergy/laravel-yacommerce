@@ -14,6 +14,7 @@ use Orq\Laravel\YaCommerce\Domain\UserInterface;
 class Campaign extends OrmModel implements CampaignInterface, PricePolicyInterface, QualificationPolicyInterface, CampaignRepositoryInterface
 {
     protected $table = 'yac_campaigns';
+    protected $model = 'campaign';
 
     /**
      * Make validation rules for the model

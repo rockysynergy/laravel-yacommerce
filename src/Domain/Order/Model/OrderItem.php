@@ -8,6 +8,7 @@ use Orq\Laravel\YaCommerce\Domain\OrmModel;
 class OrderItem  extends OrmModel
 {
     protected $table = 'yac_orderitems';
+    protected $guarded = ['product_id'];
 
     /**
      * Make validation rules for the model

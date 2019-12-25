@@ -10,6 +10,7 @@ use Orq\Laravel\YaCommerce\IllegalArgumentException;
 abstract class OrmModel extends Model
 {
     use SoftDeletes;
+    protected $model = ''; // used as part of namespace for validation message translation
 
     /**
      *
@@ -84,7 +85,7 @@ abstract class OrmModel extends Model
                 $ruleBits = explode(':', $aRule);
                 $rKey = $ruleBits[0];
                 $repMsg = [];
-                $repMsg['field'] = trans("YaCommerce::fields.product.{$attr}");
+                $repMsg['field'] = trans("YaCommerce::fields.{$this->model}.{$attr}");
 
                 if (count($ruleBits) > 1) {
                     $ruleAttr = explode(',', $ruleBits[1]);

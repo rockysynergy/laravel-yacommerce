@@ -23,6 +23,7 @@ class Category extends OrmModel
     use NodeTrait;
 
     protected $table = 'yac_categories';
+    protected $model = 'category';
 
     /**
      * The attributes that aren't mass assignable.

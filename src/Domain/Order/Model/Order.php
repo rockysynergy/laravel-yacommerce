@@ -8,6 +8,7 @@ class Order extends OrmModel implements OrderInterface
 {
 
     protected $table = 'yac_orders';
+    protected $model = 'order';
     protected $guarded = ['order_number_prefix'];
 
     /**
