@@ -1,9 +1,21 @@
 @startuml Order-class
+Interface OrderInfoInterface {
+    +getUser():User
+    +getOrderItems():[]
+    +getPayTotal():int
+}
+
+Class OrderInfoVo <<Value Object>> {
+    -user: User
+    -products: array
+    +__construct(array order_items = [], User user)
+}
+
 Interface OrderServiceInterface {
     +makeOrder(array info):void
     +getMyOrders(int userId): Collection
-    +repalyOrder(int orderId):void
-    +addToCart(array info):void
+    +repayOrder(int orderId):void
+    +postPay(array info):void
 }
 
 
@@ -42,6 +54,7 @@ class CartItem <<OrmModel>> {
 
 OrderServiceInterface <|.. OrderService
 Order "1" o-- "many" OrderItem
+OrderInfoInterface <|.. OrderInfoVo
 @enduml
 
 @startuml Order-sequence

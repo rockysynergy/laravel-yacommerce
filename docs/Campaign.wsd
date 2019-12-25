@@ -1,31 +1,27 @@
 @startuml campaign-class
-Class OrderInfo <<Value Object>> {
-    -user: User
-    -products: array
-    +__construct(User user, Products products = [])
-    +user():User
-    +products():[]
-    +getTotal():int
-    +getParticipateCount():int
+Interface OrderInfoInterface {
+    +getUser():User
+    +getOrderItems():[]
+    +getPayTotal():int
 }
 interface CampaignInterface {
     +getStartTime(): DateTime
     +getEndTime(): DateTime
     +addProduct(Product $product):void
-    +calculatePrice(OrderInfo order):int
-    +isQualified(OrderInfo order):bool
+    +calculatePrice(OrderInfoInterface orderInfo):int
+    +isQualified(OrderInfoInterface orderInfo):bool
 }
 interface PricePolicyInterface {
-    +calculatePrice(OrderInfo order):int
+    +calculatePrice(OrderInfoInterface orderInfo):int
 }
 interface PriceStrategyInterface {
-    +calculate(OrderInfo order):int
+    +calculate(OrderInfoInterface orderInfo):int
 }
 interface QualificationPolicyInterface {
-    +isQualified(OrderInfo order):bool
+    +isQualified(OrderInfoInterface orderInfo):bool
 }
 interface QualificaitonStrategyInterface {
-    +isQualified(CampaignInterface $campaign OrderInfo order):bool
+    +isQualified(CampaignInterface campaign, OrderInfoInterface orderInfo):bool
 }
 
 abstract OrmModel {
@@ -69,14 +65,14 @@ QualificationPolicy --> "1" QualificaitonStrategyInterface
 CampaignService --> "1" Campaign : uses
 @enduml
 
-@startuml campaign-sequence-IsQualified
+@startuml campaign-sequence
 actor User
 boundary CampaignService
 
 group Uses Strategy
-    User -> CampaignService: IsQualified(OrderInfo info)
-    CampaignService -> Campaign: Isqualified(OrderInfo info)
-    Campaign -> QulificationStrategyInterface: Isqualified(OrderInfo info)
+    User -> CampaignService: IsQualified(OrderInfoInterface info)
+    CampaignService -> Campaign: Isqualified(OrderInfoInterface info)
+    Campaign -> QulificationStrategyInterface: Isqualified(OrderInfoInterface info)
     QualificationStrategyInterface --> Campaign: True | False
     Campaign --> CampaignService: True | False
     CampaignService --> User: True | False
@@ -89,6 +85,4 @@ group Campaign CRUD
     CampaignService -> Campaign: createInstance(array data)
     note over CampaignService: `Update`, `Delete` and `FindById` shares the similar sequence
 end
-
-
 @enduml
