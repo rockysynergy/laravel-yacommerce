@@ -2,6 +2,7 @@
 
 namespace Orq\Laravel\YaCommerce\Domain\Order\Service;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Orq\Laravel\YaCommerce\Payment\WxPay;
 use Orq\Laravel\YaCommerce\Events\SavedOrder;
@@ -16,8 +17,8 @@ use Orq\Laravel\YaCommerce\Domain\UserRepositoryInterface;
 use Orq\Laravel\YaCommerce\Domain\Order\PrepaidUserInterface;
 use Orq\Laravel\YaCommerce\Domain\Order\Repository\OrderRepository;
 use Orq\Laravel\YaCommerce\Domain\Order\Model\CartItemServiceInterface;
-use Orq\Laravel\YaCommerce\Domain\Product\Service\ProductServiceInterface;
 use Orq\Laravel\YaCommerce\Domain\Campaign\Model\CampaignRepositoryInterface;
+use Orq\Laravel\YaCommerce\Domain\Product\Service\ProductService;
 
 /**
  * CampaignService
@@ -30,6 +31,7 @@ class OrderService extends AbstractCrudService implements CrudInterface
      * Tackle the problem that annonymous function can not modify parent scope array for create function
      */
     protected $order_items = [];
+    protected $shiaddress = [];
 
     protected $pay_amount = 0;
     protected $campaign = null;
@@ -40,8 +42,9 @@ class OrderService extends AbstractCrudService implements CrudInterface
      */
     protected $purifyData;
 
-    public function __construct($order)
+    public function __construct($order = null)
     {
+        if (is_null($order)) $order = new Order();
         parent::__construct($order);
 
         // Stash away the `order_items`, calculate `pay_amount` and generate `order_number`, to make data ready to be created as Order
@@ -105,15 +108,16 @@ class OrderService extends AbstractCrudService implements CrudInterface
 
     /**
      * @param array $data
-     * @param Orq\Laravel\YaCommerce\Domain\UserInterface $user
+     * @param object $user implements PrepaidUserInerface or UserInteface
      * @return array
      */
-    public function makeOrder(array $data, UserInterface $user):array
+    public function makeOrder(array $data, $user):array
     {
-        $orderInfo = new OrderInfo($data, $user);
+        $orderInfo = new OrderInfo($data);
         $payload = [];
 
         // if campaign presents, check the qualification and calculate the pay_amount
+        //@todo How about multiple campains?
         if (isset($data['campaign_id'])) {
             $campaignRepository = resolve(CampaignRepositoryInterface::class);
             $campaign = $campaignRepository->findById($data['campaign_id']);
@@ -126,9 +130,9 @@ class OrderService extends AbstractCrudService implements CrudInterface
         $data['pay_amount'] = $orderInfo->getPayTotal();
         $data['description'] = $orderInfo->getDescription();
         if (isset($data['type'])) {
-            if ($data['type'] == 'prepay') $this->makePrepaidOrder($data);
+            if ($data['type'] == 'prepay') $this->makePrepaidOrder($data, $user);
         } else {
-            $payload = $this->makeShopOrder($data);
+            $payload = $this->makeShopOrder($data, $user);
         }
 
         $this->deleteCartItems();
@@ -137,10 +141,14 @@ class OrderService extends AbstractCrudService implements CrudInterface
 
     /**
      * make prepaid order
+     *
+     * @param array $data
+     * @param PrepaiedUserInterface $user
+     *
+     * @return void
      */
-    protected function makePrepaidOrder(array $data): void
+    protected function makePrepaidOrder(array $data, PrepaidUserInterface $user): void
     {
-        $user = resolve(PrepaidUserInterface::class, ['id' => $data['user_id']]);
         $total = $data['pay_amount'] / 100;
         if ($total > $user->getLeftCredit()) {
             throw new IllegalArgumentException(trans("YaCommerce::message.no-enough-credit"), 1565581699);
@@ -148,7 +156,7 @@ class OrderService extends AbstractCrudService implements CrudInterface
 
         try {
             DB::beginTransaction();
-            $productService = resolve(ProductServiceInterface::class);
+            $productService = resolve(ProductService::class);
             foreach ($data['order_items'] as $orderItem) {
                 $productService->decInventory($orderItem['product_id'], $orderItem['amount']);
             }
@@ -164,12 +172,17 @@ class OrderService extends AbstractCrudService implements CrudInterface
 
     /**
      * make shop order
+     *
+     * @param array $data
+     * @param PrepaiedUserInterface $user
+     *
+     * @return array the payload for FE code to start the paying
      */
-    protected function makeShopOrder(array $data): array
+    protected function makeShopOrder(array $data, UserInterface $user): array
     {
         try {
             DB::beginTransaction();
-            $productService = resolve(ProductServiceInterface::class);
+            $productService = resolve(ProductService::class);
             foreach ($data['order_items'] as $orderItem) {
                 $productService->decInventory($orderItem['product_id'], $orderItem['amount']);
             }
@@ -180,7 +193,7 @@ class OrderService extends AbstractCrudService implements CrudInterface
             DB::rollBack();
         }
 
-        $payload = !is_null($this->order) ? $this->makePayload($this->order) : [];
+        $payload = !is_null($this->order) ? $this->makePayload($this->order, $user) : [];
         return $payload;
     }
 
@@ -189,10 +202,13 @@ class OrderService extends AbstractCrudService implements CrudInterface
      * repay the order
      *
      * @param array $orderId
+     * @param PrepaiedUserInterface $user
+     *
+     * @return array the payload for FE code to start the paying
      */
-    public function repay($orderId)
+    public function repay($orderId, $user)
     {
-        $info = $this->makePayload($orderId);
+        $info = $this->makePayload($orderId, $user);
 
         $prepayId = WxPay::makeUnifiedOrder($info);
         $payload = WxPay::assemblePayload($prepayId);
@@ -202,26 +218,19 @@ class OrderService extends AbstractCrudService implements CrudInterface
 
     /**
      * @param mix $order_id | $order
-     * @return array
+     * @param PrepaiedUserInterface $user
+     *
+     * @return array the payload for FE code to start the paying
      */
-    protected function makePayload($order):array
+    protected function makePayload($order, $user):array
     {
         if (!is_object($order)) {
             $order = Order::find($order);
         }
-        $userRepository = resolve(UserRepositoryInterface::class);
-        $info = ['body' => $order->description, 'out_trade_no' => $order->order_number, 'total_fee' => $order->pay_amount, 'openid' => $userRepository->findById($order->user_id)->getWxOpenId()];
+        $info = ['body' => $order->description, 'out_trade_no' => $order->order_number, 'total_fee' => $order->pay_amount, 'openid' => $user->getWxOpenId()];
 
         $prepayId = WxPay::makeUnifiedOrder($info);
         return WxPay::assemblePayload($prepayId);
-    }
-
-    /**
-     * 获取用户在指定应用或商店的所有订单
-     */
-    public static function findAllForUser(int $userId, string $ptype, int $pid): array
-    {
-        return OrderRepository::findAllForUser($userId, $ptype, $pid);
     }
 
     /**
@@ -236,8 +245,17 @@ class OrderService extends AbstractCrudService implements CrudInterface
             }
         }
 
-        $cartService = resolve(CartItemServiceInterface::class);
+        $cartService = resolve(CartItemService::class);
         $cartService->deleteItems($cItemIds);
+    }
+
+    /**
+     * Find all orders for the user
+     * @param array $filter
+     */
+    public function findAllForUser(array $filter): Collection
+    {
+        return $this->ormModel->findAllOrders($filter);
     }
 
 }

@@ -5,14 +5,17 @@ namespace Orq\Laravel\YaCommerce\Domain\Campaign\Model;
 use Illuminate\Support\Collection;
 use Orq\DddBase\IllegalArgumentException;
 use Orq\Laravel\YaCommerce\Domain\OrmModel;
-use Orq\Laravel\YaCommerce\Domain\Product\Model\Product;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Orq\Laravel\YaCommerce\Domain\UserInterface;
+use Orq\Laravel\YaCommerce\Domain\Product\Model\Product;
 
 /**
  * The `type` field is used to differentiate campaigns
  */
 class Campaign extends OrmModel implements CampaignInterface, PricePolicyInterface, QualificationPolicyInterface, CampaignRepositoryInterface
 {
+
+    use SoftDeletes;
     protected $table = 'yac_campaigns';
     protected $model = 'campaign';
 

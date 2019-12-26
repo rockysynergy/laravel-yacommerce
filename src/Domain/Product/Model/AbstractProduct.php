@@ -3,12 +3,15 @@
 namespace Orq\Laravel\YaCommerce\Domain\Product\Model;
 
 use Illuminate\Support\Facades\Log;
-use Orq\Laravel\YaCommerce\Domain\Compaign\Model\Seckill;
 use Orq\Laravel\YaCommerce\Domain\OrmModel;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Orq\Laravel\YaCommerce\IllegalArgumentException;
+use Orq\Laravel\YaCommerce\Domain\Compaign\Model\Seckill;
 
 abstract class AbstractProduct extends OrmModel
 {
+
+    use SoftDeletes;
 
     /**
      * Make validation rules for the model

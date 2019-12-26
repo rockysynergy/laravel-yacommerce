@@ -9,7 +9,7 @@ abstract class AbstractCrudService implements CrudInterface
 
     protected $ormModel;
 
-    public function __construct($ormModel)
+    public function __construct($ormModel = null)
     {
         $this->ormModel = $ormModel;
     }

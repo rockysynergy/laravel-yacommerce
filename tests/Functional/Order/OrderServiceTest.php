@@ -101,10 +101,88 @@ class OrderServiceTest  extends DbTestCase
         $this->assertDatabaseHas('yac_orderitems', $uItem);
     }
 
+
     /**
+     * @test
+     */
+    public function makePrePaidOrderThrowsExceptionIfLeftCreditIsNotEnough()
+    {
+        $this->expectExceptionCode(1565581699);
+        $data = [
+            'user_id'=>3,
+            'type' => 'prepay',
+            'order_number_prefix' => 'BP',
+            'order_items'=> [[
+                'id'=>1,
+                'thumbnail'=>'https://wqb.fs007.com.cn/storage/images/mythumb.jpg',
+                'title'=>'电水壶',
+                'info'=>'2019最新款',
+                'amount'=>10,
+                'pay_amount'=>38800,
+                'unit_price'=>40,
+            ]]
+        ];
+        $user = new PrapayUserA(50);
+
+        $orderService = new OrderService();
+        $orderService->makeOrder($data, $user);
+    }
+
+    /**
+     * @test
+     */
+    public function makePrePaidOrderSavesTheOrderInformation()
+    {
+        $shop = [ 'id' => 3, 'name' => '积分商城'];
+        DB::table('yac_shops')->insert($shop);
+        $category = ['id'=> 4, 'title'=>'生活用品', 'shop_id'=>3];
+        DB::table('yac_categories')->insert($category);
+        $pData = [
+            'id' => 23,
+            'title' => '电风扇',
+            'cover_pic' => '/storage/pics/fans.jpg',
+            'description' => '商品详情描述',
+            'price' => 5432,
+            'pictures' => 'pic_1.jpg, pic_2.jpg, pic_3.jpg',
+            'category_id' => $category['id'],
+            'inventory' => 11,
+            'status' => 1,
+        ];
+        DB::table('yac_products')->insert($pData);
+        $data = [
+            'user_id'=>3,
+            'type' => 'prepay',
+            'order_number_prefix' => 'BP',
+            'order_items'=> [[
+                'id'=>1,
+                'thumbnail'=>'https://wqb.fs007.com.cn/storage/images/mythumb.jpg',
+                'title'=>'电水壶',
+                'info'=>'2019最新款',
+                'amount'=>$pData['inventory'] - 2,
+                'pay_amount'=>3800,
+                'unit_price'=>3,
+                'product_id' => $pData['id'],
+            ]],
+            'shop_id' => $shop['id'],
+        ];
+        $user = new PrapayUserA(50);
+
+        $orderService = new OrderService();
+        $orderService->makeOrder($data, $user);
+        $orderItem = $data['order_items'][0];
+        $this->assertDatabaseHas('yac_orderitems', ['title' => $orderItem['title'], 'unit_price' => $orderItem['unit_price']]);
+        $this->assertEquals(12, $user->getLeftCredit());
+
+        $product = DB::table('yac_products')->where('id', '=', $pData['id'])->first();
+        $this->assertEquals(2, $product->inventory);
+    }
+
+    /**
+     * @test
      */
     public function saveOrderThenGetInfoForWxPay()
     {
+        $this->markTestIncomplete('Needs to interact with WxPay server');
         $data = [
             'user_id'=>3,
             'items'=> [[
@@ -130,37 +208,7 @@ class OrderServiceTest  extends DbTestCase
     }
 
     /**
-     */
-    public function saveOrderDeductTheProductInventoryIfProductIdPresented()
-    {
-        $shop = [ 'id' => 3, 'name' => '积分商城'];
-        DB::table('yac_shops')->insert($shop);
-        $category = ['id'=> 4, 'title'=>'生活用品', 'shop_id'=>3];
-        DB::table('yac_categories')->insert($category);
-        $product = ['id'=>3, 'title'=>'羽毛球拍', 'category_id'=>4, 'inventory'=>3];
-        DB::table('yac_products')->insert($product);
-        $data = [
-            'user_id'=>3,
-            'items'=> [[
-                'id'=>1,
-                'thumbnail'=>'https://wqb.fs007.com.cn/storage/images/mythumb.jpg',
-                'title'=>'会费',
-                'info'=>'2019-07-01至2019-10-31(3个月)会费',
-                'amount'=>1,
-                'pay_amount'=>388,
-                'unit_price'=>40,
-                'product_id'=>3
-            ]],
-            'ptype'=>'shop',
-            'pid'=>1,
-        ];
-
-        OrderService::saveOrder($data, 'HF');
-        $d = DB::table('yac_products')->where('id', 3)->first();
-        $this->assertEquals(2, $d->inventory);
-    }
-
-    /**
+     * @test
      */
     public function getOrdersForUser()
     {
@@ -168,24 +216,21 @@ class OrderServiceTest  extends DbTestCase
             'order_number'=>substr($this->makeStr(21), 0, 19).'b',
             'pay_method'=>1,
             'user_id'=>3,
-            'ptype'=>'app',
-            'pid'=>2,
+            'shop_id'=>2,
             'pay_amount'=>355,
         ];
         $data_b = [
             'order_number'=>substr($this->makeStr(21), 0, 19).'c',
             'pay_method'=>1,
             'user_id'=>3,
-            'ptype'=>'shop',
-            'pid'=>3,
+            'shop_id'=>3,
             'pay_amount'=>300,
         ];
         $data_c = [
             'order_number'=>substr($this->makeStr(21), 0, 19).'d',
             'pay_method'=>1,
             'user_id'=>4,
-            'ptype'=>'shop',
-            'pid'=>3,
+            'shop_id'=>3,
             'pay_amount'=>320,
         ];
         DB::table('yac_orders')->insert([$data_a, $data_b, $data_c]);
@@ -193,65 +238,40 @@ class OrderServiceTest  extends DbTestCase
         $re = DB::table('yac_orders')->get();
         $this->assertEquals(3, $re->count());
 
-        $re = OrderService::findAllForUser(3, 'app', 2);
-        $this->assertEquals(1, count($re));
+        $orderService = new OrderService();
+        $re = $orderService->findAllForUser(['shop_id' => 2, 'user_id' => 3]);
+        $this->assertEquals(1, $re->count());
         $this->assertEquals($data_a['pay_amount'], $re[0]['pay_amount']);
     }
 
-    /**
-     */
-    public function makePrePaidOrderThrowsExceptionIfLeftCreditIsNotEnough()
-    {
-        $this->expectExceptionCode(1565581699);
-        $data = [
-            'user_id'=>3,
-            'items'=> [[
-                'id'=>1,
-                'thumbnail'=>'https://wqb.fs007.com.cn/storage/images/mythumb.jpg',
-                'title'=>'电水壶',
-                'info'=>'2019最新款',
-                'amount'=>10,
-                'pay_amount'=>38800,
-                'unit_price'=>40,
-            ]]
-        ];
-        $user = new PrapayUserA(50);
-
-        OrderService::makePrepaidOrder($data, $user);
-    }
 
     /**
-     */
-    public function makePrePaidOrderSavesTheOrderInformation()
-    {
-        $data = [
-            'user_id'=>3,
-            'items'=> [[
-                'id'=>1,
-                'thumbnail'=>'https://wqb.fs007.com.cn/storage/images/mythumb.jpg',
-                'title'=>'电水壶',
-                'info'=>'2019最新款',
-                'amount'=>10,
-                'pay_amount'=>3800,
-                'unit_price'=>3,
-            ]],
-            'ptype'=>'shop',
-            'pid'=>1,
-        ];
-        $user = new PrapayUserA(50);
-
-        OrderService::makePrepaidOrder($data, $user);
-        $this->assertDatabaseHas('yac_orderitems', $data['items'][0]);
-        $this->assertEquals(12, $user->getLeftCredit());
-    }
-
-    /**
+     * @test
      */
     public function saveOrderSavesTheShipaddressIfTheDataHasOne()
     {
+        $this->markTestSkipped('Depends on shipment module');
+        $shop = [ 'id' => 3, 'name' => '积分商城'];
+        DB::table('yac_shops')->insert($shop);
+        $category = ['id'=> 4, 'title'=>'生活用品', 'shop_id'=>3];
+        DB::table('yac_categories')->insert($category);
+        $pData = [
+            'id' => 23,
+            'title' => '电风扇',
+            'cover_pic' => '/storage/pics/fans.jpg',
+            'description' => '商品详情描述',
+            'price' => 5432,
+            'pictures' => 'pic_1.jpg, pic_2.jpg, pic_3.jpg',
+            'category_id' => $category['id'],
+            'inventory' => 11,
+            'status' => 1,
+        ];
+        DB::table('yac_products')->insert($pData);
         $data = [
             'user_id'=>3,
-            'items'=> [[
+            'type' => 'prepay',
+            'order_number_prefix' => 'BP',
+            'order_items'=> [[
                 'id'=>1,
                 'thumbnail'=>'https://wqb.fs007.com.cn/storage/images/mythumb.jpg',
                 'title'=>'电水壶',
@@ -259,17 +279,18 @@ class OrderServiceTest  extends DbTestCase
                 'amount'=>10,
                 'pay_amount'=>3800,
                 'unit_price'=>3,
+                'product_id' => $pData['id'],
             ]],
             'shipaddress'=>[
                 'name'=>'潘耶林',
                 'mobile'=>'13977822812',
                 'address'=>'广东省江门市东大街32号'
             ],
-            'ptype'=>'shop',
-            'pid'=>1,
+            'shop_id'=>1,
         ];
         $user = new PrapayUserA(50);
-        OrderService::makePrepaidOrder($data, $user);
+        $orderService = new OrderService();
+        $orderService->makeOrder($data, $user);
 
         $this->assertDatabaseHas('yac_shipaddresses', $data['shipaddress']);
         $order = DB::table('yac_orders')->first();

@@ -20,8 +20,8 @@ class CreateYacCampaignsTable extends Migration
             $table->timestamp('start_time')->default(DB::raw('CURRENT_TIMESTAMP'))->comment('开始日期');
             $table->timestamp('end_time')->default(DB::raw('CURRENT_TIMESTAMP'))->comment('结束日期');
 
-           $table->timestamps();
-           $table->softDeletes();
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 

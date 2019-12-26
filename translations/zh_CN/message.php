@@ -9,4 +9,5 @@ return [
     'cannot-find-campaign' => '找不到活动记录',
     'campaign-not-qualified' => '没有参加活动的资格',
     'no-enough-credit' => '余额不足',
+    'all-orders-wrong-params' => '请提供shop_id和user_id',
 ];

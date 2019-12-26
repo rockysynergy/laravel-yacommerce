@@ -3,29 +3,57 @@
 namespace Orq\Laravel\YaCommerce\Domain\Order\Service;
 
 use Orq\DddBase\ModelFactory;
+use Illuminate\Support\Collection;
+use Orq\Laravel\YaCommerce\Domain\CrudInterface;
+use Orq\Laravel\YaCommerce\Domain\AbstractCrudService;
 use Orq\Laravel\YaCommerce\Domain\Order\Model\CartItem;
-use Orq\Laravel\YaCommerce\Domain\Order\Repository\CartItemRepository;
 
-class CartItemService
+class CartItemService extends AbstractCrudService implements CrudInterface
 {
 
-    public static function addItem(int $userId, array $data):void
+    /**
+     * Add item
+     *
+     * @param array $data ['user_id', 'product_id', 'amount', 'shop_id', 'campaign_id']
+     * @return void
+     */
+    public function addItem(array $data):void
     {
-        $cartItems = CartItemRepository::find([['user_id', '=', $userId], ['product_id', '=', $data['product_id']]])->count();
+        $this->ormModel->addItem($data);
+    }
 
-        if ($cartItems < 1) {
-            $item = ModelFactory::make(CartItem::class, array_merge(['user_id'=>$userId], $data));
-            CartItemRepository::save($item);
+    /**
+     * Get all items for user
+     *
+     * @param array $filter ['user_id', 'shop_id']
+     * @return Illuminate\Support\Collection
+     */
+    public function getAllForUser(array $filter):Collection
+    {
+        return $this->ormModel->findAllItems($filter);
+    }
+
+    /**
+     * Delete items
+     *
+     * @param array $itemIds
+     * @return void
+     */
+    public function deleteItems(array $itemIds):void
+    {
+        foreach ($itemIds as $id) {
+            $this->deleteItem($id);
         }
     }
 
-    public static function deleteItem(int $itemId):void
+    /**
+     * Delete Item
+     *
+     * @param int $itemId
+     * @return void
+     */
+    public function deleteItem(int $itemId):void
     {
-        CartItemRepository::removeById($itemId);
-    }
-
-    public static function getAllForUser(int $userId, int $shopId):array
-    {
-        return CartItemRepository::findAllForUser($userId, $shopId);
+        $this->ormModel->deleteById($itemId);
     }
 }

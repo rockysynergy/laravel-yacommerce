@@ -18,7 +18,7 @@ class ProductService extends AbstractCrudService implements ProductServiceInterf
     /**
      * @param string $type the product type Product | Variant
      */
-    public function __construct(string $type)
+    public function __construct(string $type = 'product')
     {
         switch (strtolower($type)) {
             case 'product':

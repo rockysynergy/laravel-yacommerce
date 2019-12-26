@@ -3,22 +3,15 @@
 namespace Tests\YaCommerce\Functional\Order;
 
 
-use Orq\Laravel\YaCommerce\Domain\Order\Service\CartItemService;
+use Tests\DbTestCase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\DbTestCase;
+use Orq\Laravel\YaCommerce\Domain\Order\Model\CartItem;
+use Orq\Laravel\YaCommerce\Domain\Order\Service\CartItemService;
 
 class CartItemServiceTest extends DbTestCase
 {
     use RefreshDatabase;
-
-        /**
-     * Setup the test environment.
-     */
-    protected function setUp():void
-    {
-        parent::setUp();
-    }
 
     /**
      * @test
@@ -28,11 +21,13 @@ class CartItemServiceTest extends DbTestCase
         $data = [
             'product_id' => 3,
             'amount' => 5,
-            'shop_id' => 9
+            'shop_id' => 9,
+            'user_id' => 900,
         ];
-        CartItemService::addItem(2, $data);
+        $cartItemService = new CartItemService(new CartItem());
+        $cartItemService->addItem($data);
 
-        $this->assertDatabaseHas('yac_cartitems', array_merge(['user_id' => 2], $data));
+        $this->assertDatabaseHas('yac_cartitems', $data);
     }
 
     /**
@@ -51,6 +46,7 @@ class CartItemServiceTest extends DbTestCase
             'price' => '33.44',
             'description' => 'product a is the best of its kind',
             'status' => 1,
+            'inventory' => 13,
             'category_id' => 4,
         ];
         DB::table('yac_products')->insert($product_a);
@@ -63,7 +59,8 @@ class CartItemServiceTest extends DbTestCase
         ];
         DB::table('yac_cartitems')->insert($cItem);
 
-        $re = CartItemService::getAllForUser(3, 8);
-        $this->assertEquals($product_a['title'], $re[0]['product']['title']);
+        $cartItemService = new CartItemService(new CartItem());
+        $re = $cartItemService->getAllForUser(['user_id' => 3, 'shop_id' => 8]);
+        $this->assertEquals($product_a['title'], $re->get(0)->product->title);
     }
 }

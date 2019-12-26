@@ -1,42 +1,67 @@
 <?php
+
 namespace Orq\Laravel\YaCommerce\Domain\Order\Model;
 
-use Orq\DddBase\IdTrait;
-use Orq\DddBase\AbstractEntity;
-use Orq\DddBase\DomainException;
+use Orq\Laravel\YaCommerce\Domain\OrmModel;
+use Orq\Laravel\YaCommerce\Domain\Product\Model\Product;
+use Orq\Laravel\YaCommerce\IllegalArgumentException;
 
-class CartItem extends AbstractEntity
+class CartItem extends OrmModel
 {
-    use IdTrait;
+    protected $table = 'yac_cartitems';
+    protected $guarded = [];
+    protected $model = 'cartitem';
 
-
-    protected $fieldsConf = [
-        'productId' => ['validId', [['产品id不能小于0！', 1566026059]]],
-        'userId' => ['validId', [['用户id不能小于0！', 1566026095]]],
-        'shopId' => ['validId', [['商店id不能小于0！', 1566182617]]],
-        'amount' => ['positiveNumber', [['数量不能小于0', 1566026110]]],
-        'createdAt' => ['minStrlen:19|maxStrlen:19', [['不能少于19个字符', 1566026242], ['不能多于19个字符', 1566026263]]],
-    ];
-
-    public function getPersistData():array
+    /**
+     * Make validation rules for the model
+     */
+    protected function makeRules(): array
     {
-        $arr = [];
-        if ($this->id) $arr['id'] = $this->id;
-        if ($this->createdAt) $arr['created_at'] = $this->createdAt;
-        $arr['product_id'] = $this->productId;
-        $arr['user_id'] = $this->userId;
-        $arr['amount'] = $this->amount;
-        $arr['shop_id'] = $this->shopId;
-
-        return $arr;
+        return [
+            'product_id' => 'required|gte:0',
+            'user_id' => 'required|gte:0',
+            'shop_id' => 'required|gte:0',
+            'amount' => 'required|gte:0',
+            'campain_ids' => 'max:50',
+        ];
     }
 
-
-    public function getAddTime(string $format=null)
+    /**
+     * Get the post that owns the comment.
+     */
+    public function product()
     {
-        $n = new \DateTime($this->createdAt);
-        if (is_null($format)) return $n;
+        return $this->belongsTo(Product::class);
+    }
 
-        return $n->format($format);
+    /**
+     * Add item
+     * @todo how about has campaign_ids
+     *
+     * @param array $data ['user_id', 'product_id', 'amount', 'shop_id', 'campaign_id']
+     * @return void
+     */
+    public function addItem(array $data): void
+    {
+        $cartItems = self::find([['user_id', '=', $data['user_id']], ['product_id', '=', $data['product_id'], ['shop_id', '=', $data['shop_id']]]])->count();
+
+        if ($cartItems < 1) {
+            $this->createNew($data);
+        }
+    }
+
+    /**
+     * Find orders
+     *
+     * @param array $filter ['shop_id', 'user_id']
+     * @return Collection
+     */
+    public function findAllItems(array $filter)
+    {
+        if (!isset($filter['shop_id']) || !isset($filter['user_id'])) {
+            throw new IllegalArgumentException(trans('YaCommerce::message.all-orders-wrong-params'));
+        }
+
+        return self::where([['shop_id', '=', $filter['shop_id']], ['user_id', '=', $filter['user_id']]])->get();
     }
 }

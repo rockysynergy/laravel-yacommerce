@@ -2,14 +2,16 @@
 namespace Orq\Laravel\YaCommerce\Domain\Order\Model;
 
 use Orq\Laravel\YaCommerce\Domain\OrmModel;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Orq\Laravel\YaCommerce\IllegalArgumentException;
 
 class Order extends OrmModel implements OrderInterface
 {
 
+    use SoftDeletes;
     protected $table = 'yac_orders';
     protected $model = 'order';
-    protected $guarded = ['order_number_prefix'];
+    protected $guarded = ['order_number_prefix', 'type'];
 
     /**
      * Set the default value
@@ -86,5 +88,20 @@ class Order extends OrmModel implements OrderInterface
         $pObj = new OrderItem();
         $orderItem = $pObj->createNew($data);
         $this->orderItems()->save($orderItem);
+    }
+
+    /**
+     * Find orders
+     *
+     * @param array $filter ['shop_id', 'user_id']
+     * @return Collection
+     */
+    public function findAllOrders(array $filter)
+    {
+        if (!isset($filter['shop_id']) || !isset($filter['user_id'])) {
+            throw new IllegalArgumentException(trans('YaCommerce::message.all-orders-wrong-params'));
+        }
+
+        return self::where([['shop_id', '=', $filter['shop_id']], ['user_id', '=', $filter['user_id']]])->get();
     }
 }

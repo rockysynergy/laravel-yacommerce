@@ -9,7 +9,7 @@ use Orq\Laravel\YaCommerce\IllegalArgumentException;
 
 abstract class OrmModel extends Model
 {
-    use SoftDeletes;
+    
     protected $model = ''; // used as part of namespace for validation message translation
 
     /**

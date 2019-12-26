@@ -2,14 +2,13 @@
 
 namespace Orq\Laravel\YaCommerce\Domain\Campaign\Model;
 
-use Illuminate\Support\Str;
 use Orq\Laravel\YaCommerce\Domain\OrmModel;
-use Orq\Laravel\YaCommerce\Domain\Order\Model\Order;
-use Orq\Laravel\YaCommerce\Domain\ParameterAttributeTrait;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Participate extends OrmModel
 {
 
+    use SoftDeletes;
     protected $table = 'yac_participates';
 
     /**
